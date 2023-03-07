@@ -1,0 +1,46 @@
+{
+  "content": "{{{MentionType}}}",
+  "avatar_url": "{{{AvatarUrl}}}",
+  "username": "{{{BotUsername}}}",
+  "embeds": [
+    {
+      "title": "
+        {{~#if_equals ItemType 'Season'~}}
+          Season added • {{{SeriesName}}} {{{Name}}},
+        {{~else~}}
+          {{~#if_equals ItemType 'Episode'~}}
+            Episode added • {{{SeriesName}}} S{{SeasonNumber00}}E{{EpisodeNumber00}} {{{Name}}},
+            {{~else~}}
+              {{{Name}}} ({{Year}}) has been added,
+          {{~/if_equals~}}
+        {{~/if_equals~}}
+      ",
+      "thumbnail":{
+        "url": "{{ServerUrl}}/Items/{{ItemId}}/Images/Primary"
+      },
+      "description": "
+       {{~#if_exist Overview~}}
+        {{{Overview}}}\n
+       {{~/if_exist~}}
+       [**Watch here**]({{ServerUrl}}/web/index.html#!/details?id={{ItemId}}&serverId={{ServerId}})
+       {{~#if_exist Provider_imdb~}}
+         • [IMDb](https://www.imdb.com/title/{{Provider_imdb}}/)
+       {{~/if_exist~}}
+       {{~#if_exist Provider_tmdb~}}
+        {{~#if_equals ItemType 'Movie'~}}
+         • [TMDb](https://www.themoviedb.org/movie/{{Provider_tmdb}})\n
+        {{~else~}}
+         • [TMDb](https://www.themoviedb.org/tv/{{Provider_tmdb}})\n
+        {{~/if_equals~}}
+      {{~/if_exist~}}
+      ",
+      "color": "{{EmbedColor}}",
+      "footer": {
+        "text": "From {{{ServerName}}}",
+        "icon_url": "{{AvatarUrl}}"
+      },
+      "timestamp": "{{Timestamp}}"
+    }
+  ]
+}
+

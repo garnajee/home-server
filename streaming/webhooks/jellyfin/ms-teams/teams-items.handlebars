@@ -1,0 +1,53 @@
+{
+  "@type": "MessageCard",
+  "@context": "http://schema.org/extensions",
+  "summary": "{{{Name}}} has been added to {{{ServerName}}}",
+  "themeColor": "{{EmbedColor}}",
+  "title": "{{{BotUsername}}}",
+  "sections": [
+    {
+      {{#if_equals ItemType 'Season'}}
+        "activityTitle": "{{{SeriesName}}} {{{Name}}} has been added to {{{ServerName}}}",
+      {{else}}
+        {{#if_equals ItemType 'Episode'}}
+          "activityTitle": "{{{SeriesName}}} S{{SeasonNumber00}}E{{EpisodeNumber00}} {{{Name}}} has been added to {{{ServerName}}}",
+        {{else}}
+          "activityTitle": "{{{Name}}} ({{Year}}) has been added to {{{ServerName}}}",
+        {{/if_equals}}
+      {{/if_equals}}
+      "activityImage": "{{AvatarUrl}}"
+    },
+    {
+      "text": "*Synopsis:*"
+    },
+    {
+      "text": "{{{Overview}}}"
+    },
+    {
+      "text": "
+        {{~#if_exist ServerUrl~}}
+            [**Watch here**]({{ServerUrl}}/web/index.html#!/details?id={{ItemId}}&serverId={{ServerId}})
+        {{~/if_exist~}}
+
+        {{~#if_exist Provider_imdb~}}
+            • [IMDb](https://www.imdb.com/title/{{Provider_imdb}}/)
+        {{~/if_exist~}}
+
+        {{~#if_exist Provider_tmdb~}}
+            {{~#if_equals ItemType 'Movie'~}}
+               • [TMDb](https://www.themoviedb.org/movie/{{Provider_tmdb}})
+            {{~else~}}
+               • [TMDb](https://www.themoviedb.org/tv/{{Provider_tmdb}})
+            {{~/if_equals~}}
+        {{~/if_exist~}}
+      "
+    }
+  ],
+  "potentialAction": [
+    {
+      "@type": "OpenUri",
+      "name": "{{MentionType}}"
+    }
+  ]
+}
+

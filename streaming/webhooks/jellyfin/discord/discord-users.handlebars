@@ -1,0 +1,49 @@
+{
+  "content": "{{MentionType}}",
+  "avatar_url": "{{AvatarUrl}}",
+  "username": "{{{BotUsername}}}",
+  "embeds": [
+      {
+          {{#if_equals NotificationType 'AuthenticationFailure'}}
+              "title": "Authentication Failure",
+              "description": "Authentication attempt failed for user **{{{NotificationUsername}}}**."
+          {{else}}
+            {{#if_equals NotificationType 'Authentication Success'}}
+                "title": "Authentication Success",
+                "description": "**{{{NotificationUsername}}}** has logged in."
+            {{else}}
+                {{#if_equals NotificationType 'UserCreated'}}
+                    "title": "A new user was created",
+                    "description": "User **{{{NotificationUsername}}}** was just created."
+                {{else}}
+                    {{#if_equals NotificationType 'UserDeleted'}}
+                        "title": "A user was deleted",
+                        "description": "User **{{{NotificationUsername}}}** was just deleted."
+                    {{else}}
+                        {{#if_equals NotificationType 'UserPasswordChanged'}}
+                            "title": "UserPasswordChanged",
+                            "description": "User **{{{NotificationUsername}}}** changed their password."
+                        {{else}}
+                            {{#if_equals NotificationType 'UserUpdated'}}
+                                "title": "User Updated",
+                                "description": "User **{{{NotificationUsername}}}** was updated."
+                            {{else}}
+                                {{#if_equals NotificationType 'UserDataSaved'}}
+                                    "title": "User DataSaved",
+                                    "description": "User **{{{NotificationUsername}}}** data successfully saved."
+                                {{/if_equals}}
+                            {{/if_equals}}
+                        {{/if_equals}}
+                    {{/if_equals}}
+                {{/if_equals}}
+            {{/if_equals}}
+          {{/if_equals}},
+          "color": "16711680",
+          "footer": {
+              "text": "From {{{ServerName}}}",
+              "icon_url": "{{AvatarUrl}}"
+          },
+          "timestamp": "{{Timestamp}}"
+        }
+   ]
+}

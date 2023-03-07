@@ -1,0 +1,29 @@
+{
+    "@type": "MessageCard",
+    "@context": "http://schema.org/extensions",
+    "summary": "{{{Name}}} has been added to {{{ServerName}}}",
+    "themeColor": "#FF0000", //red
+    "title": "{{{BotUsername}}}",
+    "sections": [
+      {
+          {{#if_equals NotificationType 'UserCreated'}}
+            "activityTitle": "User **{{{NotificationUsername}}}** was just created."
+          {{/if_equals}}
+          {{#if_equals NotificationType 'UserDeleted'}}
+            "activityTitle": "User **{{{NotificationUsername}}}** was just deleted."
+          {{/if_equals}}
+          {{#if_equals NotificationType 'UserPasswordChanged'}}
+            "activityTitle": "User **{{{NotificationUsername}}}** changed their password."
+          {{/if_equals}}
+          {{#if_equals NotificationType 'UserUpdated'}}
+            "activityTitle": "User **{{{NotificationUsername}}}** was updated."
+          {{/if_equals}}
+          {{#if_equals NotificationType 'UserDataSaved'}}
+            "activityTitle": "User **{{{NotificationUsername}}}** data successfully saved."
+          {{/if_equals}}
+      },
+      {
+          "activitySubtitle": "{{{ServerName}}} - {{Timestamp}}"
+      }
+    ]
+}

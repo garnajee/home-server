@@ -1,0 +1,26 @@
+{
+    "@type": "MessageCard",
+    "@context": "http://schema.org/extensions",
+    "summary": "{{{Name}}} has been added to {{{ServerName}}}",
+    "themeColor": "#FF0000", //red
+    "title": "{{{BotUsername}}}",
+    "sections": [
+      {
+          {{#if_exist NotificationUsername}}
+            "activityTitle": "User **{{{NotificationUsername}}}** has been locked out of {{{ServerName}}} for failing too many login attempts."
+          {{/if_exist}}
+      },
+      {
+          "text": "[**Enable User**]({{ServerUrl}}/web/index.html#!/useredit.html?userId={{UserId}}) • [**Reset Password**]({{ServerUrl}}/web/index.html#!/userpassword.html?userId={{UserId}})"
+      },
+      {
+          "activitySubtitle": "{{{ServerName}}} - {{Timestamp}}"
+      }
+    ],
+    "potentialAction": [
+      {
+        "@type": "OpenUri",
+        "name": "{{MentionType}}"
+      }
+    ]
+}
