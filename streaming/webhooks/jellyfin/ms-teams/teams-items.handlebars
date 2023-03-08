@@ -18,7 +18,11 @@
       "activityImage": "{{AvatarUrl}}"
     },
     {
-      "text": "*Synopsis:* {{{Overview}}}"
+      "text": "
+        {{~if_exist Overview~}}
+          *Synopsis:* {{{Overview}}}
+        {{~/if_exist~}}
+      "
     },
     {
       "text": "
