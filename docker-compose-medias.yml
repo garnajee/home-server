@@ -1,0 +1,183 @@
+---
+version: "3.9"
+services:
+  transmission-openvpn:
+    image: haugene/transmission-openvpn:latest
+    container_name: transovpn
+    restart: always
+    cap_add:
+      - NET_ADMIN
+    volumes:
+      - ${BASE}/transovpn/config:/config
+      - ${DOWNLOADS}:/data
+      - ${BASE}/transovpn/ratio/:/home/
+    environment:
+      OPENVPN_PROVIDER: ${VPN_PROVIDER}
+      OPENVPN_CONFIG: ${VPN_COUNTRIES}
+      OPENVPN_USERNAME: ${VPN_USERNAME}
+      OPENVPN_PASSWORD: ${VPN_PASSWORD}
+      TRANSMISSION_RPC_USERNAME: ${RPC_USERNAME}
+      TRANSMISSION_RPC_PASSWORD: ${RPC_PASSWORD}
+      TRANSMISSION_RPC_AUTHENTICATION_REQUIRED: true
+      LOCAL_NETWORK: ${NETWORKIP}
+      OPENVPN_OPTS: "--inactive 3600 --ping 10 --ping-exit 60"
+    dns:
+      - 1.1.1.1 # CloudFlare
+      - 1.0.0.1
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+    ports:
+      - "0.0.0.0:8000:9091" # transmission
+      - "0.0.0.0:8001:9117" # jackett
+      - "0.0.0.0:8002:8191" # flaresolverr
+    networks:
+      net-chill:
+        ipv4_address: 10.10.66.100
+
+  jackett:
+    image: lscr.io/linuxserver/jackett:latest
+    container_name: jackett
+    restart: always
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=Europe/London
+      - AUTO_UPDATE=true
+    volumes:
+      - ${BASE}/jackett/config:/config
+      - ${DOWNLOADS}:/downloads
+    # ports:
+    #   - "127.0.0.1:8001:9117"
+    network_mode: "service:transmission-openvpn" # Add to the transmission-openvpn Container Network
+    depends_on:
+      - transmission-openvpn # Set dependency on transmission-openvpn Container
+    healthcheck: # Here you will check if transmission is reachable from the Jackett container via localhost
+      # test: curl -f http://localhost:8000 || exit 1
+      # Use this test if you protect your transmission with user and password
+      # comment test above and un-comment line below.
+      test: curl -f http://${RPC_USERNAME}:${RPC_PASSWORD}@localhost:8000 || exit 1
+      interval: 5m00s
+      timeout: 10s
+      retries: 2
+    networks:
+      net-chill:
+        ipv4_address: 10.10.66.101
+
+  flaresolverr:
+    image: ghcr.io/flaresolverr/flaresolverr:latest
+    container_name: flaresolverr
+    restart: always
+    environment:
+      - LOG_LEVEL=${LOG_LEVEL:-info}
+      - LOG_HTML=${LOG_HTML:-false}
+      - CAPTCHA_SOLVER=${CAPTCHA_SOLVER:-none}
+      - TZ=Europe/London
+    # ports:
+    #   - "127.0.0.1:8002:8191"
+    network_mode: "service:transmission-openvpn"
+    depends_on:
+      - transmission-openvpn
+    healthcheck:
+      test: curl -f http://${RPC_USERNAME}:${RPC_PASSWORD}@localhost:8000 || exit 1
+      interval: 5m00s
+      timeout: 10s
+      retries: 2
+    networks:
+      net-chill:
+        ipv4_address: 10.10.66.102
+
+  jellyfin:
+    image: lscr.io/linuxserver/jellyfin:latest
+    container_name: jellyfin
+    restart: always
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=Europe/London
+    volumes:
+      - ${BASE}/jellyfin/config:/config
+      - ${DOWNLOADS}:/data
+    ports:
+      - "0.0.0.0:8003:8096"
+    networks:
+      net-chill:
+        ipv4_address: 10.10.66.103
+
+  ombi:
+    image: lscr.io/linuxserver/ombi:latest
+    container_name: ombi
+    restart: always
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=Europe/London
+      - BASE_URL=/ombi
+    volumes:
+      - ${BASE}/ombi/config:/config
+    ports:
+      - "0.0.0.0:8004:3579"
+    networks:
+      net-chill:
+        ipv4_address: 10.10.66.104
+
+  radarr:
+    image: lscr.io/linuxserver/radarr:latest
+    container_name: radarr
+    restart: always
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=Europe/London
+    volumes:
+      - ${BASE}/radarr/config:/config
+      - ${DOWNLOADS}:/downloads
+    ports:
+      - "0.0.0.0:8010:7878"
+    networks:
+      net-chill:
+        ipv4_address: 10.10.66.110
+
+  sonarr:
+    image: lscr.io/linuxserver/sonarr:latest
+    container_name: sonarr
+    restart: always
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=Europe/London
+    volumes:
+      - ${BASE}/sonarr/config:/config
+      - ${DOWNLOADS}:/downloads
+    ports:
+      - "0.0.0.0:8011:8989"
+    networks:
+      net-chill:
+        ipv4_address: 10.10.66.111
+
+  removarr:
+    image: ghcr.io/garnajee/removarr:latest
+    container_name: removarr
+    restart: always
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=Europe/London
+    volumes:
+      - ${DOWNLOADS}/completed:/data/completed
+      - ${DOWNLOADS}/medias:/data/medias
+    ports:
+      - "0.0.0.0:8012:5000"
+    networks:
+      net-chill:
+        ipv4_address: 10.10.66.112
+
+networks:
+  net-chill:
+    external: true
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 10.10.66.0/24
+
