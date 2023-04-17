@@ -50,9 +50,10 @@ To install everything, just follow this Readme in this order.
 
 Synology Server: 
 
- - Download the Docker App available on Synology Package Center
- - Create a docker [user](https://trash-guides.info/Hardlinks/How-to-setup-for/Synology/#create-a-user)
- - Connect on SSH and download `docker-compose` [latest command version](https://docs.docker.com/compose/install/other/):
+- Download the Docker App available on Synology Package Center
+- Create a docker [user](https://trash-guides.info/Hardlinks/How-to-setup-for/Synology/#create-a-user)
+  - once it's done, connect on SSH and type `id <username>` and write down the `uid` and `gid` respectively `PUID` and `PGID` for the [`.env`](.env-example).
+- Connect on SSH and download `docker-compose` [latest command version](https://docs.docker.com/compose/install/other/):
 
 ```bash
 $ curl -SL https://github.com/docker/compose/releases/download/v2.17.2/docker-compose-linux-x86_64 -o /usr/local/bin/docker-compose
@@ -140,6 +141,7 @@ Normally, you don't need to modify the docker-compose.yml file. Only the `.env` 
 
 - list of [VPN PROVIDERS](https://haugene.github.io/docker-transmission-openvpn/supported-providers/)
 - local subnet mask for `NETWORKIP`: `ip route | awk '!/ (docker0|br-)/ && /src/ {print $1}'`
+- PUID and PGID
 
 #### Create a docker network
 
