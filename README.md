@@ -38,6 +38,7 @@ To install everything, just follow this Readme in this order.
       + [Jellyfin](#jellyfin)
       + [Ombi](#ombi)
   * [Bonus](#bonus)
+      + [Webhooks](#webhooks)
 - [License](#license)
 
 ## Requirements
@@ -390,6 +391,10 @@ And if you don't want to open port on your router (or if you can't):
 - [CloudFlare Tunnel](https://github.com/cloudflare/cloudflared)
 
 Pay attention to not use CloudFlare tunnel for Jellyfin streaming, you may be banned for breaking TOS [term 2.8](https://www.cloudflare.com/en-gb/terms/).
+
+### Webhooks
+
+I provide some webhooks for Jellyfin. These webhooks are used for Discord and MS Teams.
 
 # License
 
