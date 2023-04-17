@@ -39,6 +39,7 @@ To install everything, just follow this Readme in this order.
       + [Ombi](#ombi)
   * [Bonus](#bonus)
       + [Webhooks](#webhooks)
+      + [Fake Ratio](#fake-ratio)
 - [License](#license)
 
 ## Requirements
@@ -117,7 +118,7 @@ opt
         └── ratio
 ```
 
-The `/opt/chill/transovpn/ratio/` folder is used to fake your upload stats on semi-private indexers.
+The `/opt/chill/transovpn/ratio/` folder is used to fake your upload stats on (semi-)private indexers. See [Fake Ratio](#fake-raio).
 
 The `/opt/chill/storage/downloads/watch/` folder is used when you manually put `.torrent` files, so it's going to be downloaded automatically without any access to the Transmission interface.
 
@@ -397,6 +398,10 @@ Pay attention to not use CloudFlare tunnel for Jellyfin streaming, you may be ba
 ### Webhooks
 
 I provide some webhooks for Jellyfin. These webhooks are used for Discord and MS Teams.
+
+### Fake Ratio
+
+If you need to fake your upload in order to be have a ratio >= 1, you can use [Ratio.py](https://github.com/garnajee/Ratio.py). Also available in this [repository](Ratio.py).
 
 # License
 
