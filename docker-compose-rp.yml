@@ -1,0 +1,51 @@
+version: "3"
+services:
+  npm:
+    image: 'jc21/nginx-proxy-manager:latest'
+    container_name: npm
+    restart: always
+    ports:
+      - '8080:80' # Public HTTP Port
+      - '4443:443' # Public HTTPS Port
+      - '81:81' # Admin Web Port
+    environment:
+      # Uncomment this if you want to change the location of 
+      # the SQLite DB file within the container
+      # DB_SQLITE_FILE: "/data/database.sqlite"
+      DB_MYSQL_HOST: "npm-db"
+      DB_MYSQL_PORT: 3306
+      DB_MYSQL_USER: "npm"
+      DB_MYSQL_PASSWORD: "npm"
+      DB_MYSQL_NAME: "npm"
+      # Uncomment this if IPv6 is not enabled on your host
+      DISABLE_IPV6: 'true'
+    volumes:
+      - /opt/docker/nginx-proxy-manager/data:/data
+      - /opt/docker/nginx-proxy-manager/letsencrypt:/etc/letsencrypt
+    depends_on:
+      - npm-db
+    networks:
+      - npm-internal
+      - net-chill
+
+  npm-db:
+    image: 'jc21/mariadb-aria:latest'
+    container_name: npm-db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: 'npm'
+      MYSQL_DATABASE: 'npm'
+      MYSQL_USER: 'npm'
+      MYSQL_PASSWORD: 'npm'
+    volumes:
+      - /opt/docker/npm-db/data/mysql:/var/lib/mysql
+    networks:
+      - npm-internal
+      - net-chill
+
+networks:
+  npm-internal:
+  net-chill:
+    name: net-chill
+    external: true
+
