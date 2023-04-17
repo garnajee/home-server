@@ -224,16 +224,16 @@ $ docker-compose up -d
 
 To access services: (`IP` is the ip of your server)
 
-| **Service**          | **Address** |
-|----------------------|-------------|
-| Transmission-openvpn | <IP>:8000   |
-| Jackett              | <IP>:8001   |
-| FlareSolverr         | <IP>:8002   |
-| Jellyfin             | <IP>:8003   |
-| Ombi                 | <IP>:8004   |
-| Radarr               | <IP>:8010   |
-| Sonarr               | <IP>:8011   |
-| Removarr             | <IP>:8012   |
+| **Service**          | **Address**  |
+|----------------------|--------------|
+| Transmission-openvpn | `<IP>:8000`  |
+| Jackett              | `<IP>:8001`  |
+| FlareSolverr         | `<IP>:8002`  |
+| Jellyfin             | `<IP>:8003`  |
+| Ombi                 | `<IP>:8004`  |
+| Radarr               | `<IP>:8010`  |
+| Sonarr               | `<IP>:8011`  |
+| Removarr             | `<IP>:8012`  |
 
 ## Reverse Proxy
 
@@ -253,7 +253,7 @@ You also need to open 2 ports on your router:
 
 This docker-compose contains:
 
-- [Nginx Proxy Manager][https://github.com/NginxProxyManager/nginx-proxy-manager]
+- [Nginx Proxy Manager](https://github.com/NginxProxyManager/nginx-proxy-manager)
 - [Maria DB Aria](https://github.com/jc21/docker-mariadb-aria)
 
 ### Installation
@@ -264,7 +264,7 @@ This docker-compose contains:
 $ mkdir -p /opt/docker/{nginx-proxy-manager,npm-db}
 ```
 
-Download the [`docker-compose-rp.yml`](docker-compose-rp.yml) `/opt/docker/`, and rename it:
+Download the [`docker-compose-rp.yml`](docker-compose-rp.yml) in `/opt/docker/`, and rename it:
 
 ```bash
 $ cd /opt/docker
@@ -321,7 +321,7 @@ dns_ovh_consumer_key = agf6hU1g13uj86XXXXXXXXXfv1l2n3g4j
 ```
 
 * To create your certificate, go back on NPM (`<IP>:81`), "SSL Certificates" tab, "Add ..."
-* fill the information for: `*.yourdomain.com` and `youdomain.com`
+* fill the information for: `*.yourdomain.com` and `yourdomain.com`
 
 ## Setup all the services
 ### Transmission
@@ -344,15 +344,17 @@ Add these values:
 
 Leave the rest blank.
 
-Add your indexer.
+Add your indexer(s).
 
 ### Radarr & Sonarr
 
 Follow these [guides](https://trash-guides.info/).
 
+I'll add more information later.
+
 ### Jellyfin
 
-Follow the step, it's easy.
+Follow the steps, it's easy.
 
 Create an API key for Ombi.
 
@@ -376,7 +378,7 @@ Now for every service you're going to add (Sonarr, Radarr, ...) make sure to wri
 
 ## Bonus
 
-* Don't want to use a reverse proxy?
+Don't want to use a reverse proxy?
 
 You can use a VPN:
 
