@@ -401,7 +401,7 @@ I provide some webhooks for Jellyfin. These webhooks are used for Discord and MS
 
 ### Fake Ratio
 
-If you need to fake your upload in order to be have a ratio >= 1, you can use [Ratio.py](https://github.com/garnajee/Ratio.py). Also available in this [repository](Ratio.py).
+If you need to fake your upload in order to be have a ratio >= 1, you can use [Ratio.py](https://github.com/garnajee/Ratio.py).
 
 # License
 
