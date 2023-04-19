@@ -468,6 +468,7 @@ $ docker-compose --file docker-compose-whatsapp.yml up -d
 ```
 
 > Note that the docker-compose I provided is not really optmized, you can add environment variable to better configure. You can check the documentation [here](https://waha.devlike.pro/docs/how-to/config/).
+
 > **Feel free to modify and perhaps make a pull request!**
 
 Then follow the [official](https://github.com/devlikeapro/whatsapp-http-api#3-start-a-new-session) from step **3** to **5**. For any further information, like the id of a contact or a group, please read the [documentation](https://waha.devlike.pro/docs/how-to/).
