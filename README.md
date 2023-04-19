@@ -495,7 +495,7 @@ And that's it, you can save.
 
 ### Fake Ratio
 
-If you need to fake your upload in order to be have a ratio >= 1, you can use [Ratio.py](https://github.com/garnajee/Ratio.py).
+If you need to fake your upload in order to have a ratio >= 1, you can use [Ratio.py](https://github.com/garnajee/Ratio.py).
 
 # License
 
