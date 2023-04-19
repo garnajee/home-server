@@ -319,7 +319,7 @@ You'll need something like this:
 
 ```
 dns_ovh_endpoint = ovh-eu
-dns_ovh_application_key = 1091757595XXXXXa
+dns_ovh_application_key = 109XXX7595XXXXXa
 dns_ovh_application_secret = a1z2g3y435TGcazbXXXXXXXXa45e
 dns_ovh_consumer_key = agf6hU1g13uj86XXXXXXXXXfv1l2n3g4j
 ```
@@ -467,7 +467,10 @@ $ wget https://raw.githubusercontent.com/garnajee/home-server/master/docker-comp
 $ docker-compose --file docker-compose-whatsapp.yml up -d
 ```
 
-Then follow the [official](https://github.com/devlikeapro/whatsapp-http-api#3-start-a-new-session) from step **3** to **5**.
+> Note that the docker-compose I provided is not really optmized, you can add environment variable to better configure. You can check the documentation [here](https://waha.devlike.pro/docs/how-to/config/).
+> **Feel free to modify and perhaps make a pull request!**
+
+Then follow the [official](https://github.com/devlikeapro/whatsapp-http-api#3-start-a-new-session) from step **3** to **5**. For any further information, like the id of a contact or a group, please read the [documentation](https://waha.devlike.pro/docs/how-to/).
 
 Go back to Jellyfin > Plugin > Webhook:
 
@@ -485,9 +488,9 @@ And finally you need to 2 Headers:
 1. "*Key*": "accept", "*Value*": "application/json"
 2. "*Key*": "Content-Type", "*Value*": "application/json"
 
+> Please note, that we cannot send images with this API (it's a paid feature).
+
 And that's it, you can save.
-
-
 
 ### Fake Ratio
 
