@@ -1,0 +1,14 @@
+{
+  "chatId": "<group-id-here>@g.us",
+  "text":
+      {{#if_equals NotificationType 'UserCreated'}}
+       "*A new user was created*\n User _*{{{NotificationUsername}}}*_ was just created.\n _{{Timestamp}}_"
+     {{else}}
+       {{#if_equals NotificationType 'UserDeleted'}}
+         "*A user was deleted*\n User _*{{{NotificationUsername}}}*_ was just deleted.\n _{{Timestamp}}_"
+       {{else}}
+         "```Nothing happened...```"
+       {{/if_equals}}
+     {{/if_equals}},
+  "session": "default"
+}

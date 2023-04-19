@@ -1,0 +1,14 @@
+{
+  "chatId": "<group-id-here>@g.us",
+  "text":
+    {{~#if_equals ItemType 'Season'~}}
+        "*Season added • {{{SeriesName}}} {{{Name}}}*\n {{~#if_exist Overview~}}```{{{Overview}}}```{{~/if_exist~}}\n {{~#if_exist Provider_imdb~}} • [IMDb](https://www.imdb.com/title/{{Provider_imdb}}/)\n {{~/if_exist~}}{{~#if_exist Provider_tmdb~}} • [TMDb](https://www.themoviedb.org/tv/{{Provider_tmdb}}){{~/if_exist~}}\n _{{{ServerName}}} - {{Timestamp}}_"
+    {{~else~}}
+        {{~#if_equals ItemType 'Episode'~}}
+        "*Episode added • {{{SeriesName}}} S{{SeasonNumber00}}E{{EpisodeNumber00}} {{{Name}}}*\n {{~#if_exist Overview~}}```{{{Overview}}}```{{~/if_exist~}}\n {{~#if_exist Provider_imdb~}} • [IMDb](https://www.imdb.com/title/{{Provider_imdb}}/)\n {{~/if_exist~}}{{~#if_exist Provider_tmdb~}} • [TMDb](https://www.themoviedb.org/tv/{{Provider_tmdb}})\n {{~/if_exist~}} \n _{{{ServerName}}} - {{Timestamp}}_"
+        {{~else~}}
+            "*{{{Name}}} ({{Year}}) has been added*\n {{~#if_exist Overview~}}```{{{Overview}}}```{{~/if_exist~}}\n {{~#if_exist Provider_imdb~}} • [IMDb](https://www.imdb.com/title/{{Provider_imdb}}/)\n {{~/if_exist~}}{{~#if_exist Provider_tmdb~}} • [TMDb](https://www.themoviedb.org/movie/{{Provider_tmdb}})\n {{~/if_exist~}} \n _{{{ServerName}}} - {{{Timestamp}}}_"
+        {{~/if_equals~}}
+    {{~/if_equals~}},
+  "session": "default"
+}
