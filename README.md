@@ -364,6 +364,8 @@ Create an API key for Ombi.
 
 Create all the users who are going to access to Jellyfin **and** Ombi.
 
+To have better images for your libraires, you can use [these images](https://imgur.com/a/Guqk15B).
+
 ### Ombi
 
 In the setting page:
@@ -397,7 +399,95 @@ Pay attention to not use CloudFlare tunnel for Jellyfin streaming, you may be ba
 
 ### Webhooks
 
-I provide some webhooks for Jellyfin. These webhooks are used for Discord and MS Teams.
+I provide some webhooks for Jellyfin. These webhooks are used for:
+
+- Discord
+- Microsoft Teams
+- WhatsApp
+
+First of all, you need to install the Jellyfin plugin called "Webhooks": Jellyfin > Dashboard > Plugins > Catalog > Webhook
+
+Then, you need to restart Jellyfin:
+
+```bash
+$ cd /opt/chill/
+$ docker-compose restart jellyfin
+```
+
+Now, go back to Jellyfin in the Plugins tab and clic on Webhook.
+
+The "*Server Url*" is your Jellyfin URL. If you expose it on internet, it's something like this: https://yourdomainname.com/jellyfin
+
+*If you don't have a domain name, Jellyfin will not be able to display images (posters) in the Discord/Teams webhooks.*
+
+To add a **Discord** webhook:
+
+- clic on "Add Discord Destination"
+- "*Webhook Name*": what you want
+- "*Webhook Url*": the discord webhook url
+- "*Notification type*": 
+  1. if you want to receive notification when a new item (movie/tv show/...) is added, check "*Item Added*"
+  2. or when a user is locked out (because of too much wrong password during connection), check "*User Locked Out*"
+  3. or when a user is created/deleted, when a password is changed, ... (for every use case check [this file](webhooks/jellyfin/discord/discord-users.handlebars)), check "*Authentication \**" and "*User \**"
+- "*User Filter*": personnaly, I don't check anything here
+- "*Item Type*": check everything (depending on your webhook template) **except** "*Send All Properties*"
+- "*Template*": (copy and paste the content)
+  1. [webhooks/jellyfin/discord/discord-item.handlebars](webhooks/jellyfin/discord/discord-item.handlebars)
+  2. [webhooks/jellyfin/discord/discord-users-locked-out.handlebars](webhooks/jellyfin/discord/discord-users-locked-out.handlebars)
+  3. [webhooks/jellyfin/discord/discord-users.handlebars](webhooks/jellyfin/discord/discord-users.handlebars)
+- "*Avatar Url*": just change the avatar profil picture directly on Discord
+- "*Webhook Username*": should not be empty, but you can write what you want, the real username is defined directly in Discord
+- "*Mention Type*": I never used this
+- "*Embed Color*": color of the embeded message
+
+Then clic save.
+
+To add a **Microsoft Teams** webhhok:
+
+- clic on "Add a Generic Destination"
+- check the steps for Discord, it's the same
+- "*Template*":
+  1. "*Item Added*": [webhooks/jellyfin/ms-teams/teams-items.handlebars](webhooks/jellyfin/ms-teams/teams-items.handlebars)
+  2. "*User Locked Out*": [webhooks/jellyfin/ms-teams/teams-users-locked-out.handlebars](webhooks/jellyfin/ms-teams/teams-users-locked-out.handlebars)
+  3. "*User*": [webhooks/jellyfin/ms-teams/teams-users.handlebars](webhooks/jellyfin/ms-teams/teams-users.handlebars)
+  
+To add a **WhatsApp** webhook:
+
+Not as easy as the others.
+
+You need to connect you WhatsApp account as if you were logging on WhatsApp Web.
+
+To acheive this, you're going to use another docker-compose to self-host a WhatsApp HTTP API. I'm using [this API](https://github.com/devlikeapro/whatsapp-http-api).
+
+Follow these steps:
+
+```bash
+$ cd /opt/chill
+$ wget https://raw.githubusercontent.com/garnajee/home-server/master/docker-compose-whatsapp.yml
+$ docker-compose --file docker-compose-whatsapp.yml up -d
+```
+
+Then follow the [official](https://github.com/devlikeapro/whatsapp-http-api#3-start-a-new-session) from step **3** to **5**.
+
+Go back to Jellyfin > Plugin > Webhook:
+
+- clic on "Add Generic Form Destination"
+- "*Webhook Url*": the **internal** docker ip, if you don't change anything in the docker-compose it should be: `http://10.10.66.200:3000/api/sendText`
+- then check what you want depending on the template
+
+Then copy and paste the template you want:
+
+1. "*Item Added*": [webhooks/jellyfin/whatsapp/whatsapp-items.handlebars](webhooks/jellyfin/whatsapp/whatsapp-items.handlebars)
+2. (very basic) "*User created/deleted*": [webhooks/jellyfin/whatsapp/whatsapp-basic-user.handlebars](webhooks/jellyfin/whatsapp/whatsapp-basic-user.handlebars)
+
+And finally you need to 2 Headers:
+
+1. "*Key*": "accept", "*Value*": "application/json"
+2. "*Key*": "Content-Type", "*Value*": "application/json"
+
+And that's it, you can save.
+
+
 
 ### Fake Ratio
 
