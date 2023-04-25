@@ -199,7 +199,7 @@ Now everything is up, just to be sure, you can check if Transmission goes throug
 $ docker exec -it transovpn curl ifconfig.co
 XXX.XXX.XXX.XXX
 ```
-And then check the location of this ip address [here](https://iplocation.com).
+And then check the location of this ip address [here](https://ifconfig.co).
 
 ### Update docker's images
 #### Update one specific image
