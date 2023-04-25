@@ -87,7 +87,7 @@ $ rm -rf /opt/chill
 * Create the structure for every services
 
 ```bash
-$ mkdir -p /opt/chill/{transovpn/{config,ratio},jackett/config,jellyfin/config,ombi/config,radarr/config,sonarr/config,bazarr/config,storage/downloads/{completed,incomplete,watch,medias/{films,series}}}
+$ mkdir -p /opt/chill/{transovpn/{config,ratio},jackett/config,jellyfin/config,ombi/config,radarr/config,sonarr/config,bazarr/config,storage/downloads/{completed,incomplete,watch,medias/{movies,series}}}
 ```
 
 Here is what it's going to create:
@@ -110,7 +110,7 @@ opt
     │       ├── completed
     │       ├── incomplete
     │       ├── medias
-    │       │   ├── films
+    │       │   ├── movies
     │       │   └── series
     │       └── watch
     └── transovpn
