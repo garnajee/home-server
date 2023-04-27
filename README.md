@@ -438,7 +438,7 @@ Then, add the [Handlebars template](webhooks/jellyfin/global-item.handlebars) in
 
 And finally, build and run the docker image.
 
-All these steps are explained in the [README](JellyHookAPI/README.md) of the JellyHookAPI folder.
+All these steps are explained in the [README](JellyHookAPI/README.md#jellyhookapi) of the JellyHookAPI folder.
 
 ##### Discord Webhook
 
