@@ -55,7 +55,7 @@ networks:
 
 To add basic http authentication, you'll need to:
 
-- modify the [`docker/golang.Dockerfile`](docker/golang.Dockerfile) and change the last line:
+- modify the [`docker/golang.Dockerfile`](golang.Dockerfile) and change the last line:
 
 ```diff
 - ENTRYPOINT ["/app/whatsapp"]
