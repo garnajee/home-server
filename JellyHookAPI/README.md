@@ -4,7 +4,7 @@ This is a Flask API that gather all the necessary information from Jellyfin and 
 
 *For now, the collected information is only for "item added".*
 
-So the goal is simple: on Jellyfin you'll add only one webhook, [this one](../webhooks/jellyfin/global-item.handlebars), and then you modify [jellyhookapi.py](ellyhookapi.py) to add your function to send a requests to your desired API.
+So the goal is simple: on Jellyfin you'll add only one webhook, [this one](../webhooks/jellyfin/global-item.handlebars), and then you modify [jellyhookapi.py](jellyhookapi.py) to add your function to send a requests to your desired API.
 
 The [global-item](../webhooks/jellyfin/global-item.handlebars) webhook has:
 
