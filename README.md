@@ -525,7 +525,7 @@ And that's it, you can save.
 
 ##### New method WhatsApp Webhook
 
-***Please refer to the [whatsapp-api/README](whatsapp-api#whatsapp-api to install and configure this API.***
+***Please refer to the [whatsapp-api/README](whatsapp-api#whatsapp-api) to install and configure this API.***
 
 This API allows you to send much more things than the previous one.
 
