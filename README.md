@@ -490,7 +490,8 @@ And finally you need to 2 Headers:
 1. "*Key*": "accept", "*Value*": "application/json"
 2. "*Key*": "Content-Type", "*Value*": "application/json"
 
-> Please note, that we cannot send images with this API (it's a paid feature). (If you want to send the poster, refer to the new method [here](#global-webhook).)
+> Please note, that we cannot send images with this API (it's a paid feature).
+> (If you want to send the poster, refer to the new method [here](#global-webhook).)
 
 And that's it, you can save.
 
@@ -500,13 +501,13 @@ This method will allow you to send a webhook to any service/api you want in a ve
 
 This consists of using your own API and create your request in Python (which is more flexible than the Jellyfin Webhook plugin) and send it to the API you want.
 
-To do this you will need to modify as your needs the [webhooks/jellyfin/JellyHookAPI/jellyhookapi.py](webhooks/jellyfin/JellyHookAPI/jellyhookapi.py) file.
+To do this you will need to modify as your needs the [JellyHookAPI/jellyhookapi.py](JellyHookAPI/jellyhookapi.py) file.
 
-Then, add the Handlebars template in Jellyfin > Plugin > Webhook.
+Then, add the [Handlebars template](webhooks/jellyfin/global-item.handlebars) in Jellyfin > Plugin > Webhook.
 
 And finally, build and run the docker image.
 
-All these steps are explained in the [README](webhooks/jellyfin/JellyHookAPI/README.md) of the JellyHookAPI folder.
+All these steps are explained in the [README](JellyHookAPI/README.md) of the JellyHookAPI folder.
 
 ### Fake Ratio
 
