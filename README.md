@@ -434,7 +434,7 @@ This consists of using your own API and create your request in Python (which is 
 
 To do this you will need to modify as your needs the [JellyHookAPI/jellyhookapi.py](JellyHookAPI/jellyhookapi.py) file.
 
-Then, add the [Handlebars template](webhooks/jellyfin/global-item.handlebars) in Jellyfin > Plugin > Webhook.
+Then, add the [Handlebars template](webhooks/jellyfin/global-item.handlebars) in Jellyfin > Plugin > Webhook > "Generic Form Destination".
 
 And finally, build and run the docker image.
 
