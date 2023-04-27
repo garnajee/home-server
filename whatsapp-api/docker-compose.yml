@@ -1,0 +1,31 @@
+version: '3.9'
+services:
+  whatsapp_go:
+    image: aldinokemal2104/go-whatsapp-web-multidevice:latest
+    container_name: whatsapp
+    restart: always
+    logging:
+      driver: json-file
+      options:
+        max-size: 200k
+        max-file: 10
+    build:
+      context: .
+      dockerfile: ./docker/golang.Dockerfile
+    ports:
+      - "0.0.0.0:8888:3000"
+    env_file:
+      - .env
+    command: ["/app/whatsapp", "-b=${USERS_PWDS}"]
+    networks:
+      net-chill:
+        ipv4_address: 10.10.66.200
+
+networks:
+  net-chill:
+    external: true
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 10.10.66.0/24
+
