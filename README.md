@@ -39,11 +39,11 @@ To install everything, just follow this Readme in this order.
       + [Ombi](#ombi)
   * [Bonus](#bonus)
       + [Webhooks](#webhooks)
+        - [Global Webhook](#global-webhook)
           * [Discord Webhook](#discord-webhook)
           * [Microsoft Teams Webhook](#microsoft-teams-webhook)
           * [(old method) WhatsApp Webhook](#old-method-whatsapp-webhook)
           * [(new method) WhatsApp Webhook](#new-method-whatsapp-webhook)
-        - [Global Webhook](#global-webhook)
       + [Fake Ratio](#fake-ratio)
 - [License](#license)
 
@@ -426,6 +426,20 @@ The "*Server Url*" is your Jellyfin URL. If you expose it on internet, it's some
 
 *If you don't have a domain name, Jellyfin will not be able to display images (posters) in the Discord/Teams webhooks.*
 
+#### Global Webhook
+
+This method will allow you to send a webhook to any service/api you want in a very easy way.
+
+This consists of using your own API and create your request in Python (which is more flexible than the Jellyfin Webhook plugin) and send it to the API you want.
+
+To do this you will need to modify as your needs the [JellyHookAPI/jellyhookapi.py](JellyHookAPI/jellyhookapi.py) file.
+
+Then, add the [Handlebars template](webhooks/jellyfin/global-item.handlebars) in Jellyfin > Plugin > Webhook.
+
+And finally, build and run the docker image.
+
+All these steps are explained in the [README](JellyHookAPI/README.md) of the JellyHookAPI folder.
+
 ##### Discord Webhook
 
 To add a **Discord** webhook:
@@ -514,20 +528,6 @@ And that's it, you can save.
 ***Please refer to the [whatsapp-api/README](whatsapp-api/README.md) to install and configure this API.***
 
 This API allows you to send much more things than the previous one.
-
-#### Global Webhook
-
-This method will allow you to send a webhook to any service/api you want in a very easy way.
-
-This consists of using your own API and create your request in Python (which is more flexible than the Jellyfin Webhook plugin) and send it to the API you want.
-
-To do this you will need to modify as your needs the [JellyHookAPI/jellyhookapi.py](JellyHookAPI/jellyhookapi.py) file.
-
-Then, add the [Handlebars template](webhooks/jellyfin/global-item.handlebars) in Jellyfin > Plugin > Webhook.
-
-And finally, build and run the docker image.
-
-All these steps are explained in the [README](JellyHookAPI/README.md) of the JellyHookAPI folder.
 
 ### Fake Ratio
 
