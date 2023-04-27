@@ -491,6 +491,7 @@ And finally you need to 2 Headers:
 2. "*Key*": "Content-Type", "*Value*": "application/json"
 
 > Please note, that we cannot send images with this API (it's a paid feature).
+
 > (If you want to send the poster, refer to the new method [*(Global Webhook)*](#global-webhook).)
 
 And that's it, you can save.
