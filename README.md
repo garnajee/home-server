@@ -452,7 +452,7 @@ To add a **Microsoft Teams** webhook:
   2. "*User Locked Out*": [webhooks/jellyfin/ms-teams/teams-users-locked-out.handlebars](webhooks/jellyfin/ms-teams/teams-users-locked-out.handlebars)
   3. "*User*": [webhooks/jellyfin/ms-teams/teams-users.handlebars](webhooks/jellyfin/ms-teams/teams-users.handlebars)
   
-(***Old method - please refer to [this section](#global-webhook) for the new (and better) method***) To add a **WhatsApp** webhook:
+(***Old method - please refer to [the Global Webhook section](#global-webhook) for the new (and better) method***) To add a **WhatsApp** webhook:
 
 Not as easy as the others.
 
@@ -491,7 +491,7 @@ And finally you need to 2 Headers:
 2. "*Key*": "Content-Type", "*Value*": "application/json"
 
 > Please note, that we cannot send images with this API (it's a paid feature).
-> (If you want to send the poster, refer to the new method [here](#global-webhook).)
+> (If you want to send the poster, refer to the new method [*(Global Webhook)*](#global-webhook).)
 
 And that's it, you can save.
 
