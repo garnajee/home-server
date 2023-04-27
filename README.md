@@ -39,6 +39,10 @@ To install everything, just follow this Readme in this order.
       + [Ombi](#ombi)
   * [Bonus](#bonus)
       + [Webhooks](#webhooks)
+          * [Discord Webhook](#discord-webhook)
+          * [Microsoft Teams Webhook](#microsoft-teams-webhook)
+          * [(old method) WhatsApp Webhook](#old-method-whatsapp-webhook)
+          * [(new method) WhatsApp Webhook](#new-method-whatsapp-webhook)
         - [Global Webhook](#global-webhook)
       + [Fake Ratio](#fake-ratio)
 - [License](#license)
@@ -355,7 +359,7 @@ Add your indexer(s).
 
 Follow these [guides](https://trash-guides.info/).
 
-I'll add more information later.
+*I'll add more information on how to configure them later.*
 
 ### Jellyfin
 
@@ -402,9 +406,10 @@ Pay attention to not use CloudFlare tunnel for Jellyfin streaming, you may be ba
 
 I provide some webhooks for Jellyfin. These webhooks are used for:
 
-- Discord
-- Microsoft Teams
-- WhatsApp (old-method)
+- [Discord](#discord-webhook)
+- [Microsoft Teams](#microsoft-teams-webhook)
+- [WhatsApp (old-method)](#old-method-whatsapp-webhook)
+- [WhatsApp (new-method)](#new-method-whatsapp-webhook)
 
 First of all, you need to install the Jellyfin plugin called "Webhooks": Jellyfin > Dashboard > Plugins > Catalog > Webhook
 
@@ -420,6 +425,8 @@ Now, go back to Jellyfin in the Plugins tab and click on Webhook.
 The "*Server Url*" is your Jellyfin URL. If you expose it on internet, it's something like this: https://yourdomainname.com/jellyfin
 
 *If you don't have a domain name, Jellyfin will not be able to display images (posters) in the Discord/Teams webhooks.*
+
+##### Discord Webhook
 
 To add a **Discord** webhook:
 
@@ -443,6 +450,8 @@ To add a **Discord** webhook:
 
 Then click save.
 
+##### Microsoft Teams Webhook
+
 To add a **Microsoft Teams** webhook:
 
 - click on "Add a Generic Destination"
@@ -452,7 +461,11 @@ To add a **Microsoft Teams** webhook:
   2. "*User Locked Out*": [webhooks/jellyfin/ms-teams/teams-users-locked-out.handlebars](webhooks/jellyfin/ms-teams/teams-users-locked-out.handlebars)
   3. "*User*": [webhooks/jellyfin/ms-teams/teams-users.handlebars](webhooks/jellyfin/ms-teams/teams-users.handlebars)
   
-(***Old method - please refer to [the Global Webhook section](#global-webhook) for the new (and better) method***) To add a **WhatsApp** webhook:
+##### Old method WhatsApp Webhook
+
+(***Old method - please refer to [the Global Webhook section](#global-webhook) for the new (and better) method.***)
+
+To add a **WhatsApp** webhook:
 
 Not as easy as the others.
 
@@ -470,7 +483,7 @@ $ docker-compose --file docker-compose-whatsapp.yml up -d
 
 > Note that the docker-compose I provided is not really optimized, you can add environment variable to better configure. You can check the documentation [here](https://waha.devlike.pro/docs/how-to/config/).
 
-> **Feel free to modify and perhaps make a pull request!**
+> Feel free to modify
 
 Then follow the [official](https://github.com/devlikeapro/whatsapp-http-api#3-start-a-new-session) from step **3** to **5**. For any further information, like the id of a contact or a group, please read the [documentation](https://waha.devlike.pro/docs/how-to/).
 
@@ -495,6 +508,12 @@ And finally you need to 2 Headers:
 > (If you want to send the poster, refer to the new method [*(Global Webhook)*](#global-webhook).)
 
 And that's it, you can save.
+
+##### New method WhatsApp Webhook
+
+***Please refer to the [whatsapp-api/README](whatsapp-api/README.md) to install and configure this API.***
+
+This API allows you to send much more things than the previous one.
 
 #### Global Webhook
 
