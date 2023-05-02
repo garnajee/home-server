@@ -19,8 +19,11 @@ To build and run the API, follow these steps:
 
 ```bash
 $ cd JellyHookAPI
-$ docker-compose build
-$ docker-compose up -d
+# in 2 commands:
+    $ docker-compose build
+    $ docker-compose up -d
+# or in one command:
+    $ docker-compose up -d --build
 # and check if everything is fine
 $ docker-compose ps -a
 ```
@@ -29,8 +32,9 @@ If you have modified the program and want to restart the API with the new modifi
 
 ```bash
 $ cd JellyHookAPI
-$ docker-compose down
-$ docker-compose rm jellyhookapi # or $ docker rm jellyhookapi
+$ docker-compose down # or docker-compose stop jellyhookapi
+    # if you stop (instead of down) 
+    $ docker-compose rm jellyhookapi # or $ docker rm jellyhookapi
 $ docker images     # list images
 $ docker rmi -f jellyhookapi-jellyhookapi   # delete the image (it can be another name, you can also use the IMAGE ID instead)
 ```
