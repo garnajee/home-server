@@ -101,12 +101,19 @@ def get_trailer_link(tmdb):
         return None  # no trailer was found
     
     # get the key of the trailer
-    youtube_key = results[0].get("key")
-    if not youtube_key:
-        return None  # no trailer was found
+    for video in results:
+        if "bande annonce" in video.get("name", "").lower():        
+            youtube_key = video.get("key")
+            if youtube_key:
+                return f"https://youtu.be/{youtube_key}"
+    # no trailer found, return the first link
+    if not youtube_key and len(results) > 0:
+        youtube_key = results[0].get("key")
+        if youtube_key:
+            # return the shortened youtube link
+            return f"https://youtu.be/{youtube_key}"
 
-    # return the shortened youtube link
-    return f"https://youtu.be/{youtube_key}"
+    return None  # no trailer was found
 
 @app.route('/api', methods=['POST'])
 def receive_data():
