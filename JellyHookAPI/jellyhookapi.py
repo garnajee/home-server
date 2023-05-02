@@ -9,7 +9,7 @@ import io
 app = Flask(__name__)
 
 # function to send to whatsapp API
-def send_whatsapp(title, overview, watch_link, imdb, tmdb, picture_path):
+def send_whatsapp(title, overview, imdb, tmdb, picture_path):
     # Parameters
     phone = "<phone-number>@s.whatsapp.net"
     # phone = "<group-number>@g.us" # group
@@ -29,13 +29,18 @@ def send_whatsapp(title, overview, watch_link, imdb, tmdb, picture_path):
     # if overview not empty, add it to the caption
     if overview:
         caption += f'```{overview}```\n'
-    caption += f'_Watch here:{watch_link}_\n'
+    #caption += f'_Watch here:{watch_link}_\n'
     # if imdb not empty, add it to the caption
     if imdb:
         caption += f'• IMDb: {imdb}\n'
     # if tmdb not empty, add it to the caption
     if tmdb:
         caption += f'• TMDb: {tmdb}\n'
+    # get the shortened youtube trailer link from tmdb API
+    trailer_link = get_trailer_link(tmdb)
+    # add the trailer link to the caption
+    if trailer_link:
+        caption += f'• Trailer: {trailer_link}\n'
 
     # Set the data
     data = {
@@ -61,6 +66,47 @@ def send_whatsapp(title, overview, watch_link, imdb, tmdb, picture_path):
 
     # return the responses
     return response
+
+# function to get the shortened youtube trailer link from tmdb API
+def get_trailer_link(tmdb):
+    # Parameters
+    TMDB_API_KEY = "TMDB_API_KEY"
+    LANGUAGE = "fr-FR"
+
+    # base url of the tmdb API
+    base_url = "https://api.themoviedb.org/3/"
+
+    # check if the id is a movie or a tv show
+    url = f"{base_url}/movie/{tmdb}?api_key={TMDB_API_KEY}&language={LANGUAGE}"
+    response = requests.get(url)
+    if response.status_code == 200:
+        video_type = "movie"
+    else:
+        url = f"{base_url}/tv/{tmdb}?api_key={TMDB_API_KEY}&language={LANGUAGE}"
+        response = requests.get(url)
+        if response.status_code == 200:
+            video_type = "tv"
+        else:
+            return None  # the id was not found
+        
+    # search for the corresponding trailer
+    url = f"{base_url}/{video_type}/{tmdb}/videos?api_key={TMDB_API_KEY}&language={LANGUAGE}"
+    response = requests.get(url)
+    if response.status_code != 200:
+        return None  # no trailer was found
+
+    # get all the data of the trailer
+    results = response.json().get("results")
+    if not results:
+        return None  # no trailer was found
+    
+    # get the key of the trailer
+    youtube_key = results[0].get("key")
+    if not youtube_key:
+        return None  # no trailer was found
+
+    # return the shortened youtube link
+    return f"https://youtu.be/{youtube_key}"
 
 @app.route('/api', methods=['POST'])
 def receive_data():
@@ -89,7 +135,7 @@ def receive_data():
         # DEBUG: print the path of the temporary file
         #print('picture_path: ', temp.name)
         # call the function to send to whatsapp API
-        send_whatsapp(title, overview, watch_link, imdb, tmdb, temp.name)
+        send_whatsapp(title, overview, imdb, tmdb, temp.name)
         # remove the temporary file (if: NamedTemporaryFile(delete=False))
         #os.remove(temp.name)
 
