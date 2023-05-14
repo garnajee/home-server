@@ -5,6 +5,7 @@ from flask import Flask, request, jsonify
 import requests
 import tempfile
 import io
+import re
 
 app = Flask(__name__)
 
@@ -114,8 +115,9 @@ def get_trailer_link(tmdb):
         return None  # no trailer was found
 
     # get the key of the trailer
-    for video in results:
-        if "bande annonce" in video.get("name", "").lower():        
+    pattern = re.compile(r"bande[-\s]?annonce", re.IGNORECASE)
+    for video in results:   
+        if pattern.search(video.get("name", "")):
             youtube_key = video.get("key")
             if youtube_key:
                 return f"https://youtu.be/{youtube_key}"
