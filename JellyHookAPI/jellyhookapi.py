@@ -7,6 +7,12 @@ import tempfile
 import io
 import re
 
+# global variables
+TMDB_API_KEY = "TMDB_API_KEY"
+LANGUAGE = "fr-FR"
+LANGUAGE2 = "en-US"
+base_url = "https://api.themoviedb.org/3/"
+
 app = Flask(__name__)
 
 # function to send to whatsapp API
@@ -23,6 +29,16 @@ def send_whatsapp(title, overview, imdb, tmdb, picture_path):
 
     # Set the headers
     headers = {'accept': 'application/json'}
+    
+    # get tmdb id from the given tmdb link
+    # look for the id in the link
+    idt = tmdb.split("/")[-1]
+    # Remove extra text from ID, if any
+    if "-" in idt:
+        idt = idt.split("-")[0]
+    # Check ID is numeric
+    if not idt.isdigit():
+        raise ValueError('The given TMDb link is not valid.')
 
     # Set the caption
     # as if title does not exist, it will be empty string, so it will not be added to the caption
@@ -30,6 +46,8 @@ def send_whatsapp(title, overview, imdb, tmdb, picture_path):
     # if overview not empty, add it to the caption
     if overview:
         caption += f'```{overview}```\n'
+    else:
+        caption += f'```{get_synopsis(idt)}```\n'
     #caption += f'_Watch here:{watch_link}_\n'
     # if imdb not empty, add it to the caption
     if imdb:
@@ -38,7 +56,7 @@ def send_whatsapp(title, overview, imdb, tmdb, picture_path):
     if tmdb:
         caption += f'• TMDb: {shorten_link(tmdb)}\n'
     # get the shortened youtube trailer link from tmdb API
-    trailer_link = get_trailer_link(tmdb)
+    trailer_link = get_trailer_link(idt)
     # add the trailer link to the caption
     if trailer_link:
         caption += f'• Trailer: {trailer_link}\n'
@@ -68,67 +86,92 @@ def send_whatsapp(title, overview, imdb, tmdb, picture_path):
     # return the responses
     return response
 
-# function to get the shortened youtube trailer link from tmdb API
-def get_trailer_link(tmdb):
-    # Parameters
-    TMDB_API_KEY = "TMDB_API_KEY"
-    LANGUAGE = "fr-FR"
+# function to get the type of the video from tmdb API (movie or tv show)
+def get_video_type(idt):
+    # parameters
+    global TMDB_API_KEY
+    global base_url
 
-    # base url of the tmdb API
-    base_url = "https://api.themoviedb.org/3/"
-
-    # Extract tmdb id from the given tmdb link
-    # look for the ID in the link
-    id = tmdb.split("/")[-1]
-    # Remove extra text from ID, if any
-    if "-" in id:
-        id = id.split("-")[0]
-
-    # Check ID is numeric
-    if id.isdigit():
-        tmdb = int(id)
-    else:
-        return None
-
-    # check if the id is a movie or a tv show
-    url = f"{base_url}/movie/{tmdb}?api_key={TMDB_API_KEY}&language={LANGUAGE}"
-    response = requests.get(url, timeout=10)
+    movie_url = f"{base_url}/movie/{idt}?api_key={TMDB_API_KEY}"
+    tv_url = f"{base_url}/tv/{idt}?api_key={TMDB_API_KEY}"
+    
+    response = requests.get(movie_url, timeout=10)
     if response.status_code == 200:
-        video_type = "movie"
-    else:
-        url = f"{base_url}/tv/{tmdb}?api_key={TMDB_API_KEY}&language={LANGUAGE}"
-        response = requests.get(url, timeout=10)
-        if response.status_code == 200:
-            video_type = "tv"
-        else:
-            return None  # the id was not found
-        
-    # search for the corresponding trailer
-    url = f"{base_url}/{video_type}/{tmdb}/videos?api_key={TMDB_API_KEY}&language={LANGUAGE}"
-    response = requests.get(url, timeout=10)
-    if response.status_code != 200:
-        return None  # no trailer was found
+        return "movie"
+    
+    response = requests.get(tv_url, timeout=10)
+    if response.status_code == 200:
+        return "tv"
+    
+    return None
 
-    # get all the data of the trailer
-    results = response.json().get("results")
-    if not results:
-        return None  # no trailer was found
+# function to get the synopsis of the video from tmdb API
+def get_synopsis(idt):
+    # parameters
+    global TMDB_API_KEY
+    global LANGUAGE
+    global LANGUAGE2
+    global base_url
 
-    # get the key of the trailer
-    pattern = re.compile(r"bande[-\s]?annonce", re.IGNORECASE)
-    for video in results:   
-        if pattern.search(video.get("name", "")):
-            youtube_key = video.get("key")
+    languages = [LANGUAGE, LANGUAGE2]
+
+    video_type = get_video_type(idt)
+    for language in languages:
+        if video_type:
+            url = f"{base_url}/{video_type}/{idt}?api_key={TMDB_API_KEY}&language={language}"
+            response = requests.get(url, timeout=10)
+            if response.status_code == 200:
+                return response.json()["overview"]
+
+    return None # synopsis not found
+
+# function to get the shortened youtube trailer link from tmdb API
+def get_trailer_link(idt):
+    # parameters
+    global TMDB_API_KEY
+    global LANGUAGE
+    global LANGUAGE2
+    global base_url
+
+    # regex to search trailer depending on the language
+    languages = [(LANGUAGE,r"bande[-\s]?annonce"), (LANGUAGE2,r"trailer")]
+
+    # get the type of the video (movie or tv show)
+    video_type = get_video_type(idt)
+
+    # search for the corresponding trailer depending on the language
+    for language, pattern in languages:
+        if video_type:
+            youtube_key = search_trailer_key(idt, video_type, language, pattern)
             if youtube_key:
                 return f"https://youtu.be/{youtube_key}"
-    # no trailer found, return the first link
-    if not youtube_key and len(results) > 0:
-        youtube_key = results[0].get("key")
-        if youtube_key:
-            # return the shortened youtube link
-            return f"https://youtu.be/{youtube_key}"
 
-    return None  # no trailer was found
+    return None # trailer not found
+
+# function to search for the trailer key in the tmdb API
+def search_trailer_key(idt, video_type, language, pattern):
+    # parameters
+    global TMDB_API_KEY
+    global base_url
+
+    # search for the corresponding trailer depending on the language
+    url = f"{base_url}/{video_type}/{idt}/videos?api_key={TMDB_API_KEY}&language={language}"
+
+    response = requests.get(url, timeout=10)
+
+    # check if the request was successful
+    if response.status_code != 200:
+        return None
+
+    # parse the response JSON
+    results = response.json()["results"]
+
+    # search for the trailer key in the results
+    for video in results:
+        if re.search(pattern, video["name"], flags=re.IGNORECASE):
+            return video["key"]
+
+    return None # trailer key not found
 
 # function to shorten links
 def shorten_link(link):
