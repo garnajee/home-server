@@ -46,10 +46,9 @@ def send_whatsapp(title, overview, imdb, tmdb, idt, picture_path):
     if tmdb:
         caption += f'• TMDb: {shorten_link(tmdb)}\n'
     # get the shortened youtube trailer link from tmdb API
-    trailer_link = get_trailer_link(idt)
+    trailer_links = get_trailer_link(idt)
     # add the trailer link to the caption
-    if trailer_link:
-        caption += f'• Trailer: {trailer_link}\n'
+    caption += f'• Trailer FR: {trailer_links[0]}\n • Trailer EN: {trailer_links[1]}'
 
     # Set the data
     data = {
@@ -125,6 +124,7 @@ def get_trailer_link(idt):
 
     # regex to search trailer depending on the language
     languages = [(LANGUAGE,r"bande[-\s]?annonce"), (LANGUAGE2,r"trailer")]
+    trailer_links = []
 
     # get the type of the video (movie or tv show)
     video_type = get_video_type(idt)
@@ -134,9 +134,9 @@ def get_trailer_link(idt):
         if video_type:
             youtube_key = search_trailer_key(idt, video_type, language, pattern)
             if youtube_key:
-                return f"https://youtu.be/{youtube_key}"
+                trailer_links.append(f"https://youtu.be/{youtube_key}")
 
-    return None # trailer not found
+    return "Aucune bande-annonce trouvée" if not trailer_links else trailer_links
 
 # function to search for the trailer key in the tmdb API
 def search_trailer_key(idt, video_type, language, pattern):
