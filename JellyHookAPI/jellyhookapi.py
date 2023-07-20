@@ -16,7 +16,7 @@ base_url = "https://api.themoviedb.org/3/"
 app = Flask(__name__)
 
 # function to send to whatsapp API
-def send_whatsapp(title, overview, imdb, tmdb, picture_path):
+def send_whatsapp(title, overview, imdb, tmdb, idt, picture_path):
     # Parameters
     phone = "<phone-number>@s.whatsapp.net"
     # phone = "<group-number>@g.us" # group
@@ -28,17 +28,7 @@ def send_whatsapp(title, overview, imdb, tmdb, picture_path):
     compress = "True"
 
     # Set the headers
-    headers = {'accept': 'application/json'}
-    
-    # get tmdb id from the given tmdb link
-    # look for the id in the link
-    idt = tmdb.split("/")[-1]
-    # Remove extra text from ID, if any
-    if "-" in idt:
-        idt = idt.split("-")[0]
-    # Check ID is numeric
-    if not idt.isdigit():
-        raise ValueError('The given TMDb link is not valid.')
+    headers = {'accept': 'application/json'} 
 
     # Set the caption
     # as if title does not exist, it will be empty string, so it will not be added to the caption
@@ -173,6 +163,33 @@ def search_trailer_key(idt, video_type, language, pattern):
 
     return None # trailer key not found
 
+# function to get the poster url from tmdb API
+def get_tmdb_poster_url(idt):
+    global TMDB_API_KEY
+    global base_url
+
+    # Get the video type.
+    video_type = get_video_type(idt)
+
+    # poster url
+    tmdb_url = f"{base_url}/{video_type}/{idt}/images?api_key={TMDB_API_KEY}"
+
+    # request to the TMDB API
+    response = requests.get(tmdb_url, timeout=10)
+
+    # check if the request was successful
+    if response.status_code != 200:
+        raise ValueError('The request to the TMDb API was not successful.')
+
+    # parse the response JSON
+    results = response.json()
+
+    # get the poster url
+    poster_url = results["posters"][0]["file_path"]
+
+    # return the poster url
+    return poster_url
+
 # function to shorten links
 def shorten_link(link):
     # find domain name in the link
@@ -204,6 +221,23 @@ def receive_data():
     picture_url = data.get('picture_url', '')
     server_name = data.get('server_name','')
 
+    # get tmdb id from the given tmdb link
+    # look for the id in the link
+    idt = tmdb.split("/")[-1]
+    # Remove extra text from ID, if any
+    if "-" in idt:
+        idt = idt.split("-")[0]
+    # Check ID is numeric
+    if not idt.isdigit():
+        raise ValueError('The given TMDb link is not valid.')
+
+    if picture_url == '':
+        try:
+            picture_url = get_tmdb_poster_url(idt)
+        except ValueError:
+            # if the poster url is not found, use the default one
+            picture_url = "./default-poster.png"
+
     # download the picture in a temporary file (and don't delete it)
     #with tempfile.NamedTemporaryFile(delete=False) as temp:
     with tempfile.NamedTemporaryFile() as temp:
@@ -215,7 +249,7 @@ def receive_data():
         # DEBUG: print the path of the temporary file
         #print('picture_path: ', temp.name)
         # call the function to send to whatsapp API
-        send_whatsapp(title, overview, imdb, tmdb, temp.name)
+        send_whatsapp(title, overview, imdb, tmdb, idt, temp.name)
         # remove the temporary file (if: NamedTemporaryFile(delete=False))
         #os.remove(temp.name)
 
