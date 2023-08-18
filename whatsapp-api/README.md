@@ -61,7 +61,7 @@ To add basic http authentication, you'll need to:
 + ENTRYPOINT ["/app/whatsapp", "-b=user:passWithoutDash"]
 ```
 
-*special caracters in password seems to bug...*
+*special characters in password seems to bug...*
 
 - modify the [`docker-compose.yml`](docker-compose.yml):
 
