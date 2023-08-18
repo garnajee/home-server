@@ -359,8 +359,6 @@ Add your indexer(s).
 
 Follow these [guides](https://trash-guides.info/).
 
-### Radarr & Sonarr
-
 This is a config to prefer download WEB-DL 1080p x264 *NOT 10bit* files.
 
 #### Radarr Settings
@@ -379,7 +377,8 @@ If there is **something** before the condition, it means that when you clicked "
     - check `Replace Illegal Characters`
     - Color Replacement: `Delete`
     - Path /downloads/medias/movies
-2. ![Profiles](radarr-profiles.png)
+2. Profiles
+    - ![Profiles](radarr-profiles.png)
 3. Quality: Not changed
 4. Custom Formats: global
     1. 10bit: req ; `\b10bit\b`
