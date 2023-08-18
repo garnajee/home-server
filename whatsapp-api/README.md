@@ -7,13 +7,12 @@ To have a better view of the API, you can use the [Swagger Editor](https://edito
 
 ## Installation
 
-Luckily, I've already done all the following steps and you just have to clone the original repository, modify the [`.env`](.env) file, build and run the container.
+Luckily, I've already done all the following steps and you just have to clone the original repository, build and run the container.
 
 And finally, connect to the web interface: `http://<ip>:8888`, then connect to your WhatsApp account and retrieve the necessary information to configure the JellyHookAPI Python script.
 
 Just to be clear:
 
-- the `.env` file need to be at the root of this repository,
 - the `docker-compose.yml` file need to be at the root of this repository,
 - and the `golang.Dockerfile` file need to be in the `docker` folder
 
