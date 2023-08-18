@@ -22,4 +22,4 @@ WORKDIR /app
 # Copy compiled from builder.
 COPY --from=builder /app/whatsapp /app/whatsapp
 # Run the binary.
-ENTRYPOINT ["/app/whatsapp", "-b${USERS_PWDS}"]
+ENTRYPOINT ["/app/whatsapp", "-b=user:passWithoutDash"]

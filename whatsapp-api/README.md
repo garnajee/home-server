@@ -59,24 +59,17 @@ To add basic http authentication, you'll need to:
 
 ```diff
 - ENTRYPOINT ["/app/whatsapp"]
-+ ENTRYPOINT ["/app/whatsapp", "-b${USERS_PWDS}"]
++ ENTRYPOINT ["/app/whatsapp", "-b=user:passWithoutDash"]
 ```
 
-- modify the [`docker-compose.yml`](docker-compose.yml) and add the following environment variable:
+*special caracters in password seems to bug...*
+
+- modify the [`docker-compose.yml`](docker-compose.yml):
 
 ```yml
     ...
     ports:
       - "0.0.0.0:8888:3000"
-    env_file:
-      - .env
-    command: ["/app/whatsapp", "-b${USERS_PWDS}"]
     ...
-```
-
-- add a `.env` file at the root of the repository with the following content:
-
-```env
-USERS_PWDS="user1:pwd1,user2:pwd2"
 ```
 

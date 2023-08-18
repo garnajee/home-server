@@ -14,9 +14,6 @@ services:
       dockerfile: ./docker/golang.Dockerfile
     ports:
       - "0.0.0.0:8888:3000"
-    env_file:
-      - .env
-    command: ["/app/whatsapp", "-b=${USERS_PWDS}"]
     networks:
       net-chill:
         ipv4_address: 10.10.66.200
