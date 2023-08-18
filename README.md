@@ -359,7 +359,92 @@ Add your indexer(s).
 
 Follow these [guides](https://trash-guides.info/).
 
-*I'll add more information on how to configure them later.*
+### Radarr & Sonarr
+
+This is a config to prefer download WEB-DL 1080p x264 *NOT 10bit* files.
+
+#### Radarr Settings
+
+Format: `Name: X|req|neg ; regex`
+
+> Name: name of the condition
+
+> X: neither "Negate" nor "Required" checked
+
+> regex: Regular Expression
+
+If there is **something** before the condition, it means that when you clicked "import", you should choose the **something** instead of **Release title**.
+
+1. Media Management:
+    - check `Replace Illegal Characters`
+    - Color Replacement: `Delete`
+    - Path /downloads/medias/movies
+2. ![Profiles](radarr-profiles.png)
+3. Quality: Not changed
+4. Custom Formats: global
+    1. 10bit: req ; `\b10bit\b`
+    2. 3D:
+        1. 3D: X ; `\b3d|sbs|half[ .-]ou|half[ .-]sbs\b`
+        2. BluRay3D: X ; `\b(BluRay3D)\b`
+    5. x265 (HD):
+        1. x265/HEVC: req ; `[xh][ ._-]?265|\bHEVC(\b|\d)`
+        2. **Resolution** Not 2160p: reg+neg ; `R2160p`
+    7. HDR-10-10+:
+        1. HDR10+: req ; `\bHDR10(\+|P(lus)?\b)`
+        2. HDR10: req ; `\bHDR10(\b[^+|Plus])`
+        3. Not DV HDR10: neg+req ; `^(?=.*\b(DV|DoVi|Dolby[ .]?Vision)\b)(?=.*\b(HDR(10)?(?!\+))\b)`
+        4. HDR: req ; `\b(HDR)\b`
+        5. Not DV ; neg+req ; `\b(dv|dovi|dolby[ .]?vision)\b`
+        6. Not PQ: neg+req ; `\b(PQ)\b`
+        7. Not HLG: neg+req ; `\bHLG(\b|\d)`
+        8. Not SDR: neg+req ; `\bSDR(\b|\d)`
+        9. **Release Group** Not RlsGrp (Missing HDR): neg+req ; `\b(FraMeSToR|HQMUX|SiCFoI)\b`
+4. Custom Formats: French settings
+    1. French Audio:
+        1. **Language** French Language: X ; `French`
+        2. French Original Version: X ; `\bVOF\b`
+        3. TRUEFRENCH: X ; `\b(TRUEFRENCH|VFF?)\b`
+        4. French International: X ; `\bVF(I|\d)\b`
+    5. Multi Audio:
+        1. MULTi: X ; `\b(MULTi)(\d|\b)`
+        2. VO and VF: X ; `^(?=.*\b(VO)\b)(?=.*\b(VF(F|I)?)\b)`
+    6. Multi French:
+        1. MULTi: req ; `\b(MULTi)(\b|\d)`
+        2. **Language** Original Audio: req ; `Original`
+        3. **Language** French Audio: req ; `French`
+    7. VFF: req ; `\b(TRUEFRENCH|VFF)\b`
+5. Indexer: Add Torznab ; on Jackett click on "Copy Torznab Feed" and paste it in "URL" and copy-paste the API key pf jackett in API ; check everything ; select the categories you want
+6. Download Client:
+    - add transmission
+    - host: 10.10.66.100
+    - port: 9091
+    - set username and password
+    - recent priority: `last`
+    - older priority: `last`
+    - check `Remove Completed`
+    - `Remote Path Mappings`: Host: `10.10.66.100 (Transmission)` ; Remote Path: `/data/completed` ; Local Path: `/data/completed`
+
+
+#### Sonarr Settings
+
+1. Media Management:
+    - check `Replace Illegal Characters`
+    - Path /downloads/medias/series
+2. Profiles:
+    - ![Quality Profiles](sonarr-profiles.png)
+    - Language Profile: Multi: check English and French, and move them to the top of the list (English first, then French)
+    - [Release Profiles](https://trash-guides.info/Sonarr/Sonarr-Release-Profile-RegEx/)
+    - You can add `/\bHDR(\b|\d)/` and `10bit` at `-10000`` to avoid HDR and 10bit releases
+    - For Multi audio (VO+VFF):
+        ```
+        /\bMULTi(\b|\d)/i ; 10000
+        /\bMULTi(\b|\d)/i ; 10000
+        /\bVOF(\b|\d)/i   ; 8000
+        /\b(TRUEFRENCH|VFF?)(\b|\d)/i ; 6000
+        /\bFR(A|ENCH)?(\b|\d)/i ; 4000
+        /\bFR(A|ENCH)?(\b|\d)/i ; 3000
+        ```
+    - The others settings are the same as in radarr.
 
 ### Jellyfin
 
