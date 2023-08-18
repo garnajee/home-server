@@ -257,7 +257,6 @@ You also need to open 2 ports on your router:
 | HTTP                | 8080          | 80            | TCP/UDP  | Your-Server |
 | HTTPS               | 4443          | 443           | TCP/UDP  | Your-Server |
 
-
 ### What's inside
 
 This docker-compose contains:
@@ -422,7 +421,6 @@ If there is **something** before the condition, it means that when you clicked "
     - older priority: `last`
     - check `Remove Completed`
     - `Remote Path Mappings`: Host: `10.10.66.100 (Transmission)` ; Remote Path: `/data/completed` ; Local Path: `/data/completed`
-
 
 #### Sonarr Settings
 
