@@ -374,7 +374,7 @@ If there is **something** before the condition, it means that when you clicked "
 
 1. Media Management:
     - check `Replace Illegal Characters`
-    - Color Replacement: `Delete`
+    - Colon Replacement: `Delete`
     - Path /downloads/medias/movies
 2. Profiles
     - ![Profiles](radarr-profiles.png)
