@@ -307,7 +307,7 @@ email: admin@example.com
 password: changeme
 ```
 
-You'll be ask to change these informations after the first logging. 
+You'll be ask to change these informations after the first logging.
 
 ### Get a domain name & SSL certificate
 
@@ -338,7 +338,7 @@ Nothing to setup or maybe the "Speed Limits" depending on your internet connecti
 
 ### Jackett
 
-Check the box: 
+Check the box:
 
 - External access
 - Cache enabled (recommended)
@@ -479,10 +479,10 @@ You can use a VPN:
 
 And if you don't want to open port on your router (or if you can't):
 
-- [Tailscale](https://tailscale.com/kb/1131/synology/) on Synology 
+- [Tailscale](https://tailscale.com/kb/1131/synology/) on Synology
 - [CloudFlare Tunnel](https://github.com/cloudflare/cloudflared)
 
-Pay attention to not use CloudFlare tunnel for Jellyfin streaming, you may be banned for breaking TOS [term 2.8](https://www.cloudflare.com/en-gb/terms/).
+Pay attention to not use CloudFlare tunnel for Jellyfin streaming, you may be banned for breaking [TOS](https://www.cloudflare.com/en-gb/terms/).
 
 ### Webhooks
 
@@ -579,7 +579,7 @@ $ docker-compose --file docker-compose-whatsapp.yml up -d
 
 > Note that the docker-compose I provided is not really optimized, you can add environment variable to better configure. You can check the documentation [here](https://waha.devlike.pro/docs/how-to/config/).
 
-> Feel free to modify
+> Feel free to modify and perhaps make a pull request!
 
 Then follow the [official](https://github.com/devlikeapro/whatsapp-http-api#3-start-a-new-session) from step **3** to **5**. For any further information, like the id of a contact or a group, please read the [documentation](https://waha.devlike.pro/docs/how-to/).
 
@@ -615,7 +615,7 @@ This API allows you to send much more things than the previous one.
 
 If you need to fake your upload in order to have a ratio >= 1, you can use [Ratio.py](https://github.com/garnajee/Ratio.py).
 
-I don’t recommend using this indefinitely, please consider sharing to the community.
+I don't recommend using this indefinitely, please consider sharing to the community.
 
 # License
 
