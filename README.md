@@ -123,7 +123,7 @@ opt
         └── ratio
 ```
 
-The `/opt/chill/transovpn/ratio/` folder is used to fake your upload stats on (semi-)private indexers. See [Fake Ratio](#fake-raio).
+The `/opt/chill/transovpn/ratio/` folder is used to fake your upload stats on (semi-)private indexers. See [Fake Ratio](#fake-ratio).
 
 The `/opt/chill/storage/downloads/watch/` folder is used when you manually put `.torrent` files, so it's going to be downloaded automatically without any access to the Transmission interface.
 
