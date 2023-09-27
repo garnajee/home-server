@@ -1,12 +1,12 @@
 {
     "title": "
         {{~#if_equals ItemType 'Season'~}}
-            Season added • {{{SeriesName}}} {{{Name}}},
+            Season added • {{{SeriesName}}} {{{Name}}}
         {{~else~}}
           {{~#if_equals ItemType 'Episode'~}}
-            Episode added • {{{SeriesName}}} S{{SeasonNumber00}}E{{EpisodeNumber00}} {{{Name}}},
+            Episode added • {{{SeriesName}}} S{{SeasonNumber00}}E{{EpisodeNumber00}} - {{{Name}}}
             {{~else~}}
-              {{{Name}}} ({{Year}}) has been added,
+              {{{Name}}} ({{Year}}) has been added
           {{~/if_equals~}}
         {{~/if_equals~}}
         ",
@@ -21,6 +21,6 @@
                 https://www.themoviedb.org/tv/{{Provider_tmdb}}
             {{~/if_equals~}}
         {{~/if_exist~}}",
-    "picture_url": "{{ServerUrl}}/Items/{{ItemId}}/Images/Primary",
-    "server_name": "{{{ServerName}}}"
-  }
+    "picture_url": "{{ServerUrl}}/Items/{{ItemId}}/Images/Primary"
+}
+
