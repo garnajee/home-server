@@ -1,3 +1,6 @@
 [submodule "Ratio.py"]
 	path = Ratio.py
 	url = https://github.com/garnajee/Ratio.py
+[submodule "JellyHookAPI"]
+	path = JellyHookAPI
+	url = https://github.com/garnajee/JellyHookAPI
