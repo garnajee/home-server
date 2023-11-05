@@ -10,7 +10,7 @@ Here, we are going to install everything under `/opt/chill/` (full automation) a
 
 To install everything, just follow this Readme in this order.
 
-## Table of Content
+## Table of Contents
 
 - [Home Server](#home-server)
   * [Table of Content](#table-of-content)
