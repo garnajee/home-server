@@ -453,6 +453,16 @@ Create all the users who are going to access to Jellyfin **and** Ombi.
 
 To have better images for your libraries, you can use [these images](https://imgur.com/a/Guqk15B).
 
+**Prevent users from changing their password:**
+
+Go into *Dashboard* > *General* > scroll down to the *CSS* section and add this CSS code:
+
+```css
+.updatePasswordForm {
+  display: none !important;
+}
+```
+
 ### Ombi
 
 In the setting page:
