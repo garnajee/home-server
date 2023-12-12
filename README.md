@@ -431,7 +431,7 @@ If there is **something** before the condition, it means that when you clicked "
     - ![Quality Profiles](sonarr-profiles.png)
     - Language Profile: Multi: check English and French, and move them to the top of the list (English first, then French)
     - [Release Profiles](https://trash-guides.info/Sonarr/Sonarr-Release-Profile-RegEx/)
-    - You can add `/\bHDR(\b|\d)/` and `10bit` at `-10000`` to avoid HDR and 10bit releases
+    - You can add `/\bHDR(\b|\d)/` and `10bit` at `-10000` to avoid HDR and 10bit releases
     - For Multi audio (VO+VFF):
         ```
         /\bMULTi(\b|\d)/i ; 10000
@@ -460,6 +460,22 @@ Go into *Dashboard* > *General* > scroll down to the *CSS* section and add this 
   display: none !important;
 }
 ```
+
+**Add a custom button in the menu**
+
+You can add a custom button to the Jellyfin menu. For example, you can add a link to Jellyseerr.
+
+To do that, you need to add this line in the Jellyfin's `volume` field in the docker-compose file:
+
+```
+- ${BASE}/jellyfin/web-config.json:/usr/share/jellyfin/web/config.json
+```
+
+And add the `web-config.json` file in your `/opt/chill/jellyfin/` folder.
+
+*You'll see that the docker path is not the same as in the documentation. I don't know why, but that's the only way I can get it to work.*
+
+Read more [here](https://jellyfin.org/docs/general/clients/web-config/#custom-menu-links).
 
 ### Jellyseerr
 
