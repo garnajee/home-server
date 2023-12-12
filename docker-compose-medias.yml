@@ -105,19 +105,35 @@ services:
       net-chill:
         ipv4_address: 10.10.66.103
 
-  ombi:
-    image: lscr.io/linuxserver/ombi:latest
-    container_name: ombi
+  #ombi:
+  #  image: lscr.io/linuxserver/ombi:latest
+  #  container_name: ombi
+  #  restart: always
+  #  environment:
+  #    - PUID=${PUID}
+  #    - PGID=${PGID}
+  #    - TZ=Europe/London
+  #    - BASE_URL=/ombi
+  #  volumes:
+  #    - ${BASE}/ombi/config:/config
+  #  ports:
+  #    - "0.0.0.0:8004:3579"
+  #  networks:
+  #    net-chill:
+  #      ipv4_address: 10.10.66.104
+
+  jellyseerr:
+    image: fallenbagel/jellyseerr:latest
+    container_name: jellyseerr
     restart: always
     environment:
       - PUID=${PUID}
       - PGID=${PGID}
-      - TZ=Europe/London
-      - BASE_URL=/ombi
+      - TZ=${TZ}
     volumes:
-      - ${BASE}/ombi/config:/config
+      - ${BASE}/jellyseerr/config:/app/config
     ports:
-      - "0.0.0.0:8004:3579"
+      - "0.0.0.0:8004:5055"
     networks:
       net-chill:
         ipv4_address: 10.10.66.104
