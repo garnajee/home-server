@@ -43,7 +43,7 @@ services:
     environment:
       - PUID=${PUID}
       - PGID=${PGID}
-      - TZ=Europe/London
+      - TZ=${TZ}
       - AUTO_UPDATE=true
     volumes:
       - ${BASE}/jackett/config:/config
@@ -73,7 +73,7 @@ services:
       - LOG_LEVEL=${LOG_LEVEL:-info}
       - LOG_HTML=${LOG_HTML:-false}
       - CAPTCHA_SOLVER=${CAPTCHA_SOLVER:-none}
-      - TZ=Europe/London
+      - TZ=${TZ}
     # ports:
     #   - "127.0.0.1:8002:8191"
     network_mode: "service:transmission-openvpn"
@@ -95,7 +95,7 @@ services:
     environment:
       - PUID=${PUID}
       - PGID=${PGID}
-      - TZ=Europe/London
+      - TZ=${TZ}
     volumes:
       - ${BASE}/jellyfin/config:/config
       - ${DOWNLOADS}:/data
@@ -112,7 +112,7 @@ services:
   #  environment:
   #    - PUID=${PUID}
   #    - PGID=${PGID}
-  #    - TZ=Europe/London
+  #    - TZ=${TZ}
   #    - BASE_URL=/ombi
   #  volumes:
   #    - ${BASE}/ombi/config:/config
@@ -145,7 +145,7 @@ services:
     environment:
       - PUID=${PUID}
       - PGID=${PGID}
-      - TZ=Europe/London
+      - TZ=${TZ}
     volumes:
       - ${BASE}/radarr/config:/config
       - ${DOWNLOADS}:/downloads
@@ -162,7 +162,7 @@ services:
     environment:
       - PUID=${PUID}
       - PGID=${PGID}
-      - TZ=Europe/London
+      - TZ=${TZ}
     volumes:
       - ${BASE}/sonarr/config:/config
       - ${DOWNLOADS}:/downloads
@@ -179,7 +179,7 @@ services:
     environment:
       - PUID=${PUID}
       - PGID=${PGID}
-      - TZ=Europe/London
+      - TZ=${TZ}
     volumes:
       - ${DOWNLOADS}/completed:/data/completed
       - ${DOWNLOADS}/medias:/data/medias

@@ -147,6 +147,7 @@ Normally, you don't need to modify the docker-compose.yml file. Only the `.env` 
 - list of [VPN PROVIDERS](https://haugene.github.io/docker-transmission-openvpn/supported-providers/)
 - local subnet mask for `NETWORKIP`: `ip route | awk '!/ (docker0|br-)/ && /src/ {print $1}'`
 - PUID and PGID
+- TZ
 
 #### Create a docker network
 
