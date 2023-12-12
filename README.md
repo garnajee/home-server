@@ -62,12 +62,9 @@ Synology Server:
 - Create a docker [user](https://trash-guides.info/Hardlinks/How-to-setup-for/Synology/#create-a-user)
   - once it's done, connect on SSH and type `id <username>` and write down the `uid` and `gid` respectively `PUID` and `PGID` for the [`.env`](.env-example).
 - Connect on SSH and download `docker-compose` [latest command version](https://docs.docker.com/compose/install/other/):
+  - or use my custom script to [download the latest docker-compose release](update-docker-compose.sh)
 
-```bash
-$ curl -SL https://github.com/docker/compose/releases/download/v2.20.3/docker-compose-linux-x86_64 -o /usr/local/bin/docker-compose
-```
-
- - check version: `$ docker-compose version`
+- check version: `$ docker-compose version`
 
 ## Medias Server
 ### What's inside
