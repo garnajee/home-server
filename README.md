@@ -1,5 +1,7 @@
 # Home Server
 
+> **Disclaimer:** *The author and contributors do not claim ownership of any services listed or used in this repository and are not legally responsible for any improper or illegal use. It is provided for educational purposes only. The repository does not endorse piracy or copyright infringement. Creating a media platform based on torrents may involve downloading copyrighted content, which, without proper authorization, may be illegal in many jurisdictions. All rights go to the owners of the software used.*
+
 This is my perfect docker-compose for my streaming server.
 
 You'll find two 2 docker-compose, one to create the streaming services and the other one to access them through a reverse proxy.
