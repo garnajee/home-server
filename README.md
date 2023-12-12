@@ -38,7 +38,7 @@ To install everything, just follow this Readme in this order.
       + [Jackett](#jackett)
       + [Radarr & Sonarr](#radarr--sonarr)
       + [Jellyfin](#jellyfin)
-      + [Ombi](#ombi)
+      + [Jellyseerr](#jellyseerr)
   * [Bonus](#bonus)
       + [Webhooks](#webhooks)
         - [Global Webhook](#global-webhook)
@@ -75,7 +75,7 @@ This docker-compose contains:
 - [Jackett](https://github.com/Jackett/Jackett)
 - [FlareSolverr](https://github.com/FlareSolverr/FlareSolverr)
 - [Jellyfin](https://github.com/jellyfin/jellyfin)
-- [Ombi](https://github.com/Ombi-app/Ombi)
+- [Jellyseerr](https://github.com/Fallenbagel/jellyseerr)
 - [Radarr](https://github.com/Radarr/Radarr)
 - [Sonarr](https://github.com/Sonarr/Sonarr)
 - [Removarr](https://github.com/garnajee/removarr)
@@ -91,7 +91,7 @@ $ rm -rf /opt/chill
 * Create the structure for every services
 
 ```bash
-$ mkdir -p /opt/chill/{transovpn/{config,ratio},jackett/config,jellyfin/config,ombi/config,radarr/config,sonarr/config,bazarr/config,storage/downloads/{completed,incomplete,watch,medias/{movies,series}}}
+$ mkdir -p /opt/chill/{transovpn/{config,ratio},jackett/config,jellyfin/config,jellyseerr/config,radarr/config,sonarr/config,bazarr/config,storage/downloads/{completed,incomplete,watch,medias/{movies,series}}}
 ```
 
 Here is what it's going to create:
@@ -103,7 +103,7 @@ opt
     │   └── config
     ├── jellyfin
     │   └── config
-    ├── ombi
+    ├── jellyseerr
     │   └── config
     ├── radarr
     │   └── config
@@ -238,14 +238,14 @@ To access services: (`IP` is the ip of your server)
 | Jackett              | `<IP>:8001`  |
 | FlareSolverr         | `<IP>:8002`  |
 | Jellyfin             | `<IP>:8003`  |
-| Ombi                 | `<IP>:8004`  |
+| Jellyseerr           | `<IP>:8004`  |
 | Radarr               | `<IP>:8010`  |
 | Sonarr               | `<IP>:8011`  |
 | Removarr             | `<IP>:8012`  |
 
 ## Reverse Proxy
 
-To access Jellyfin and Ombi from outside your local network, you'll need to set up a reverse proxy.
+To access Jellyfin and Jellyseerr from outside your local network, you'll need to set up a reverse proxy.
 
 For that purpose, I'm going to use [Nginx Proxy Manager](https://nginxproxymanager.com/setup/).
 
@@ -446,9 +446,7 @@ If there is **something** before the condition, it means that when you clicked "
 
 Follow the steps, it's easy.
 
-Create an API key for Ombi.
-
-Create all the users who are going to access to Jellyfin **and** Ombi.
+Create all the users who are going to access to Jellyfin **and** Jellyseerr.
 
 To have better images for your libraries, you can use [these images](https://imgur.com/a/Guqk15B).
 
@@ -462,21 +460,19 @@ Go into *Dashboard* > *General* > scroll down to the *CSS* section and add this 
 }
 ```
 
-### Ombi
+### Jellyseerr
 
-In the setting page:
+Follow the steps, it's easy.
 
-+ "Configuration" tab:
-  - (General) base URL: `/ombi`
-  - (User Management) check the box. It means, that the Jellyfin account (user/password) is the same for Ombi.
+Sign in with your Jellyfin account and make sure to use the jellyfin *internal docker ip address* for the "Jellyfin URL".
 
-+ "Media Server" tab:
-  - Hostname/IP: put the internal docker ip: `10.10.66.103`.
-  - Port: `8096`
-  - API key: the one you created just before
-  - then load libraries, submit.
+When Syncing Librairies, uncheck "Collections".
 
-Now for every service you're going to add (Sonarr, Radarr, ...) make sure to write the *internal docker ip address and internal port of the application*. The API keys are available in Sonarr/Radarr/... settings tab.
+Then, add your radarr and sonarr server (still with the internal docker ip address).
+
+Once this is done, you can sync Jellyfin users with Jellyseerr, so that they have the same account for Jellyfin and Jellyseerr.
+
+For sonarr server settings, make sure to check *Season folder*.
 
 ## Bonus
 
