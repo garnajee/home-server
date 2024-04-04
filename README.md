@@ -1,5 +1,6 @@
 # Home Server
 
+> [!CAUTION]
 > **Disclaimer:** *The author and contributors do not claim ownership of any services listed or used in this repository and are not legally responsible for any improper or illegal use. It is provided for educational purposes only. The repository does not endorse piracy or copyright infringement. Creating a media platform based on torrents may involve downloading copyrighted content, which, without proper authorization, may be illegal in many jurisdictions. All rights go to the owners of the software used.*
 
 This is my perfect docker-compose for my streaming server.
@@ -504,7 +505,8 @@ And if you don't want to open port on your router (or if you can't):
 - [Tailscale](https://tailscale.com/kb/1131/synology/) on Synology
 - [CloudFlare Tunnel](https://github.com/cloudflare/cloudflared)
 
-Pay attention to not use CloudFlare tunnel for Jellyfin streaming, you may be banned for breaking [TOS](https://www.cloudflare.com/en-gb/terms/).
+> [!WARNING]
+> Pay attention to not use CloudFlare tunnel for Jellyfin streaming, you may be banned for breaking [TOS](https://www.cloudflare.com/en-gb/terms/).
 
 ### Webhooks
 
