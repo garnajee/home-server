@@ -1,0 +1,15 @@
+services:
+  whatsapp-http-api:
+    image: devlikeapro/whatsapp-http-api
+    container_name: whatsapp-api
+    restart: unless-stopped
+    ports:
+      - '3000:3000'
+    networks:
+      net-chill:
+        ipv4_address: 10.10.66.200
+
+networks:
+  net-chill:
+    external: true
+

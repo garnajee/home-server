@@ -44,10 +44,6 @@ To do so, add the following lines to the `docker-compose.yml`:
 networks:
   net-chill:
     external: true
-    driver: bridge
-    ipam:
-      config:
-        - subnet: 10.10.66.0/24
 ```
 
 ### Add basic http authentication
