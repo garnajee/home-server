@@ -582,10 +582,10 @@ That way, everything will go through the vpn.
     <li>install python and run the script:</li>
   </ul>
 
-  ```bash
+  ```
   $ cd /opt/chill/
   $ docker exec -it transovpn bash
-  # apt update &amp;&amp; apt install python3 python3-pip
+  # apt update && apt install python3 python3-pip
   # cd /home
   # pip install -r requirements.txt
   # nohup python3 ratio.py -c config.json &amp;
