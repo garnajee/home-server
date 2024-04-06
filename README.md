@@ -555,43 +555,43 @@ That way, everything will go through the vpn.
 
 <details close>
   <summary>To do this, follow these steps:</summary>
-    <ul>
-      <li>create the folder:</li>
-    </ul>
+  <ul>
+    <li>create the folder:</li>
+  </ul>
 
-    <pre><code>$ cd /opt/chill
-    $ mkdir -p transovpn/ratio
-    </code></pre>
+  <pre><code>$ cd /opt/chill
+  $ mkdir -p transovpn/ratio
+  </code></pre>
 
-    <ul>
-      <li>add this in the <code>docker-compose.yml</code>:</li>
-    </ul>
+  <ul>
+    <li>add this in the <code>docker-compose.yml</code>:</li>
+  </ul>
 
-    ```diff
-        volumes:
-          - ${BASE}/transovpn/config:/config
-          - ${DOWNLOADS}:/data
-    +     - ${BASE}/transovpn/ratio/:/home/
-    ```
+  ```diff
+      volumes:
+        - ${BASE}/transovpn/config:/config
+        - ${DOWNLOADS}:/data
+  +     - ${BASE}/transovpn/ratio/:/home/
+  ```
 
-    <ul>
-      <li>then download the content of <code>Ratio.py</code> repository inside the <code>ratio</code> folder.</li>
-      <li>download a very popular and highly leeched torrent file and put it inside the <code>ratio</code> folder.</li>
-      <li>modify the <code>config.json</code> file to match the torrent file name and path. Add your desired upload speed.</li>
-      <li>install python and run the script:</li>
-    </ul>
+  <ul>
+    <li>then download the content of <code>Ratio.py</code> repository inside the <code>ratio</code> folder.</li>
+    <li>download a very popular and highly leeched torrent file and put it inside the <code>ratio</code> folder.</li>
+    <li>modify the <code>config.json</code> file to match the torrent file name and path. Add your desired upload speed.</li>
+    <li>install python and run the script:</li>
+  </ul>
 
-    <pre><code>$ cd /opt/chill/
-    $ docker exec -it transovpn bash
-    # apt update &amp;&amp; apt install python3 python3-pip
-    # cd /home
-    # pip install -r requirements.txt
-    # nohup python3 ratio.py -c config.json &amp;
-    </code></pre>
+  <pre><code>$ cd /opt/chill/
+  $ docker exec -it transovpn bash
+  # apt update &amp;&amp; apt install python3 python3-pip
+  # cd /home
+  # pip install -r requirements.txt
+  # nohup python3 ratio.py -c config.json &amp;
+  </code></pre>
 
-    <ul>
-      <li>to view logs : <code># tail -f nohup.out</code></li>
-    </ul>
+  <ul>
+    <li>to view logs : <code># tail -f nohup.out</code></li>
+  </ul>
 </details>
 
 # License
