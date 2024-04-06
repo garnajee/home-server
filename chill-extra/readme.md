@@ -6,7 +6,7 @@ You'll find here a docker-compose to run extra dockers and scripts to update doc
 
 This docker-compose will run:
 
-- [removarr](https;//github.com/garnajee/removarr)
+- [Removarr](https;//github.com/garnajee/removarr)
 - [JellyHookAPI](https://github.com/garnajee/JellyHookAPI)
 - [Jellystats](https://github.com/CyferShepard/Jellystat)
 
