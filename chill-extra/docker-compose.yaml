@@ -1,0 +1,71 @@
+services:
+  removarr:
+    image: ghcr.io/garnajee/removarr:latest
+    container_name: removarr
+    restart: always
+    volumes:
+      - ${DOWNLOADS}/completed:/data/completed
+      - ${DOWNLOADS}/medias:/data/medias
+    ports:
+      - "0.0.0.0:8012:5000"
+    networks:
+      net-chill:
+        ipv4_address: 10.10.66.112
+
+########################################
+  jellystat-db:
+    image: postgres:15.2
+    container_name: jellystat_db
+    restart: always
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PWD}
+    volumes:
+      - ./jellystat/psql/data:/var/lib/postgresql/data
+    networks:
+      - backend
+      - net-chill
+
+  jellystat:
+    image: cyfershepard/jellystat:latest
+    container_name: jellystat
+    restart: always
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PWD}
+      POSTGRES_IP: jellystat-db
+      POSTGRES_PORT: 5432
+      JWT_SECRET: ${JWT_SECRET}
+    volumes:
+      - ./jellystat/backup-data:/app/backend/backup-data
+    ports:
+      - "8013:3000"
+    depends_on:
+      - jellystat-db
+    networks:
+      - backend
+      - net-chill
+########################################
+
+  jellyhookapi:
+    container_name: jellyhookapi
+    restart: always
+    image: python:alpine
+    working_dir: /app
+    env_file:
+      - ./JellyHookAPI/.env
+    volumes:
+      - ./JellyHookAPI/:/app
+    command: sh -c "pip install --no-cache-dir -r requirements.txt && python jellyhookapi.py"
+    ports:
+      - "0.0.0.0:7778:7778"
+    networks:
+      net-chill:
+        ipv4_address: 10.10.66.198
+
+networks:
+  backend: # for jellystat
+  net-chill:
+    name: net-chill
+    external: true
+
