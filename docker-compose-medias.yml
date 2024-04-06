@@ -1,5 +1,3 @@
----
-version: "3.9"
 services:
   transmission-openvpn:
     image: haugene/transmission-openvpn:latest
@@ -10,7 +8,6 @@ services:
     volumes:
       - ${BASE}/transovpn/config:/config
       - ${DOWNLOADS}:/data
-      - ${BASE}/transovpn/ratio/:/home/
     environment:
       OPENVPN_PROVIDER: ${VPN_PROVIDER}
       OPENVPN_CONFIG: ${VPN_COUNTRIES}
@@ -30,26 +27,22 @@ services:
         max-size: 10m
     ports:
       - "0.0.0.0:8000:9091" # transmission
-      - "0.0.0.0:8001:9117" # jackett
+      - "0.0.0.0:8001:9696" # prowlarr
       - "0.0.0.0:8002:8191" # flaresolverr
     networks:
       net-chill:
         ipv4_address: 10.10.66.100
 
-  jackett:
-    image: lscr.io/linuxserver/jackett:latest
-    container_name: jackett
-    restart: always
+  prowlarr:
+    image: lscr.io/linuxserver/prowlarr:latest
+    container_name: prowlarr
+    restart: unless-stopped
     environment:
       - PUID=${PUID}
       - PGID=${PGID}
       - TZ=${TZ}
-      - AUTO_UPDATE=true
     volumes:
-      - ${BASE}/jackett/config:/config
-      - ${DOWNLOADS}:/downloads
-    # ports:
-    #   - "127.0.0.1:8001:9117"
+      - ${BASE}/prowlarr/config:/config
     network_mode: "service:transmission-openvpn" # Add to the transmission-openvpn Container Network
     depends_on:
       - transmission-openvpn # Set dependency on transmission-openvpn Container
@@ -61,9 +54,6 @@ services:
       interval: 5m00s
       timeout: 10s
       retries: 2
-    # networks:
-    #   net-chill:
-    #     ipv4_address: 10.10.66.101
 
   flaresolverr:
     image: ghcr.io/flaresolverr/flaresolverr:latest
@@ -84,9 +74,6 @@ services:
       interval: 5m00s
       timeout: 10s
       retries: 2
-    # networks:
-    #   net-chill:
-    #     ipv4_address: 10.10.66.102
 
   jellyfin:
     image: lscr.io/linuxserver/jellyfin:latest
@@ -104,23 +91,6 @@ services:
     networks:
       net-chill:
         ipv4_address: 10.10.66.103
-
-  #ombi:
-  #  image: lscr.io/linuxserver/ombi:latest
-  #  container_name: ombi
-  #  restart: always
-  #  environment:
-  #    - PUID=${PUID}
-  #    - PGID=${PGID}
-  #    - TZ=${TZ}
-  #    - BASE_URL=/ombi
-  #  volumes:
-  #    - ${BASE}/ombi/config:/config
-  #  ports:
-  #    - "0.0.0.0:8004:3579"
-  #  networks:
-  #    net-chill:
-  #      ipv4_address: 10.10.66.104
 
   jellyseerr:
     image: fallenbagel/jellyseerr:latest
@@ -171,23 +141,6 @@ services:
     networks:
       net-chill:
         ipv4_address: 10.10.66.111
-
-  removarr:
-    image: ghcr.io/garnajee/removarr:latest
-    container_name: removarr
-    restart: always
-    environment:
-      - PUID=${PUID}
-      - PGID=${PGID}
-      - TZ=${TZ}
-    volumes:
-      - ${DOWNLOADS}/completed:/data/completed
-      - ${DOWNLOADS}/medias:/data/medias
-    ports:
-      - "0.0.0.0:8012:5000"
-    networks:
-      net-chill:
-        ipv4_address: 10.10.66.112
 
 networks:
   net-chill:
