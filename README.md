@@ -559,9 +559,10 @@ That way, everything will go through the vpn.
     <li>create the folder:</li>
   </ul>
 
-  <pre><code>$ cd /opt/chill
+  ```bash
+  $ cd /opt/chill
   $ mkdir -p transovpn/ratio
-  </code></pre>
+  ```
 
   <ul>
     <li>add this in the <code>docker-compose.yml</code>:</li>
@@ -581,13 +582,14 @@ That way, everything will go through the vpn.
     <li>install python and run the script:</li>
   </ul>
 
-  <pre><code>$ cd /opt/chill/
+  ```bash
+  $ cd /opt/chill/
   $ docker exec -it transovpn bash
   # apt update &amp;&amp; apt install python3 python3-pip
   # cd /home
   # pip install -r requirements.txt
   # nohup python3 ratio.py -c config.json &amp;
-  </code></pre>
+  ```
 
   <ul>
     <li>to view logs : <code># tail -f nohup.out</code></li>
