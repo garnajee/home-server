@@ -7,16 +7,21 @@ This is my perfect docker-compose for my streaming server.
 
 You'll find two 2 docker-compose, one to create the streaming services and the other one to access them through a reverse proxy.
 
-The only thing to modify is the `.env` file to suits your setup.
+> [!NOTE]
+> I've also created a `chill-extra` folder that automatically sends notifications on WhatsApp as soon as media is added in Jellyfin and add the [removarr](https://github.com/garnajee/removarr) docker.
 
-Here, we are going to install everything under `/opt/chill/` (full automation) and `/opt/docker/` (reverse proxy).
+
+> [!IMPORTANT]
+> The only thing to modify is the `.env` file to suits your setup.
+
+Here, we are going to install everything under `/opt/chill/` (full streaming automation) and `/opt/docker/` (reverse proxy).
 
 To install everything, just follow this Readme in this order.
 
 ## Table of Contents
 
 - [Home Server](#home-server)
-  * [Table of Content](#table-of-content)
+  * [Table of Content](#table-of-contents)
   * [Requirements](#requirements)
   * [Medias Server](#medias-server)
       + [What's inside](#whats-inside)
@@ -35,18 +40,15 @@ To install everything, just follow this Readme in this order.
       + [Run](#run)
       + [Get a domain name & SSL certificate](#get-a-domain-name--ssl-certificate)
   * [Setup all the services](#setup-all-the-services)
-      + [Transmission](#transmission)
-      + [Jackett](#jackett)
+      + [Transmission-openvpn](#transmission-openvpn)
       + [Radarr & Sonarr](#radarr--sonarr)
+        - [Radarr/Sonarr Settings](#radarrsonarr-settings)
+      + [Prowlarr](#prowlarr)
       + [Jellyfin](#jellyfin)
       + [Jellyseerr](#jellyseerr)
   * [Bonus](#bonus)
       + [Webhooks](#webhooks)
-        - [Global Webhook](#global-webhook)
-          * [Discord Webhook](#discord-webhook)
-          * [Microsoft Teams Webhook](#microsoft-teams-webhook)
-          * [(old method) WhatsApp Webhook](#old-method-whatsapp-webhook)
-          * [(new method) WhatsApp Webhook](#new-method-whatsapp-webhook)
+	    - (to send to discord, Microsoft Teams or any API)
       + [Fake Ratio](#fake-ratio)
 - [License](#license)
 
@@ -73,13 +75,12 @@ Synology Server:
 This docker-compose contains:
 
 - [Transmission-openvpn](https://github.com/haugene/docker-transmission-openvpn)
-- [Jackett](https://github.com/Jackett/Jackett)
+- [Prowlarr](https://github.com/Prowlarr/Prowlarr)
 - [FlareSolverr](https://github.com/FlareSolverr/FlareSolverr)
 - [Jellyfin](https://github.com/jellyfin/jellyfin)
 - [Jellyseerr](https://github.com/Fallenbagel/jellyseerr)
 - [Radarr](https://github.com/Radarr/Radarr)
 - [Sonarr](https://github.com/Sonarr/Sonarr)
-- [Removarr](https://github.com/garnajee/removarr)
 
 ### Installation
 
@@ -92,7 +93,7 @@ $ rm -rf /opt/chill
 * Create the structure for every services
 
 ```bash
-$ mkdir -p /opt/chill/{transovpn/{config,ratio},jackett/config,jellyfin/config,jellyseerr/config,radarr/config,sonarr/config,bazarr/config,storage/downloads/{completed,incomplete,watch,medias/{movies,series}}}
+$ mkdir -p /opt/chill/{transovpn/{config},prowlarr/config,jellyfin/config,jellyseerr/config,radarr/config,sonarr/config,storage/downloads/{completed,incomplete,watch,medias/{movies,series}}}
 ```
 
 Here is what it's going to create:
@@ -100,11 +101,11 @@ Here is what it's going to create:
 ```bash
 opt
 └── chill
-    ├── jackett
-    │   └── config
     ├── jellyfin
     │   └── config
     ├── jellyseerr
+    │   └── config
+    ├── prowlarr
     │   └── config
     ├── radarr
     │   └── config
@@ -119,11 +120,9 @@ opt
     │       │   └── series
     │       └── watch
     └── transovpn
-        ├── config
-        └── ratio
+        └── config
 ```
 
-The `/opt/chill/transovpn/ratio/` folder is used to fake your upload stats on (semi-)private indexers. See [Fake Ratio](#fake-ratio).
 
 The `/opt/chill/storage/downloads/watch/` folder is used when you manually put `.torrent` files, so it's going to be downloaded automatically without any access to the Transmission interface.
 
@@ -146,7 +145,7 @@ $ wget https://raw.githubusercontent.com/garnajee/home-server/master/.env-exampl
 Normally, you don't need to modify the docker-compose.yml file. Only the `.env` file.
 
 - list of [VPN PROVIDERS](https://haugene.github.io/docker-transmission-openvpn/supported-providers/)
-- local subnet mask for `NETWORKIP`: `ip route | awk '!/ (docker0|br-)/ && /src/ {print $1}'`
+- local subnet mask for `NETWORKIP` (use this command to know yours) : `ip route | awk '!/ (docker0|br-)/ && /src/ {print $1}'`
 - PUID and PGID
 - TZ
 
@@ -178,7 +177,7 @@ $ docker-compose up
 
 It's going to download all the images, and start all the services.
 
-**By the way, each request made by Jackett and FlareSolverr goes through the VPN.**
+**By the way, each request made by Prowlarr and FlareSolverr goes through the VPN.**
 
 Now, if you don't see any red lines among the hundreds of lines that have just scrolled through the terminal, it's usually a good sign.
 
@@ -192,7 +191,7 @@ $ docker-compose up -d
 Check the status of each docker:
 
 ```bash
-$ docker ps -a
+$ docker-compose ps -a
 ```
 
 `Status` should be `Up`.
@@ -206,6 +205,8 @@ $ docker exec -it transovpn curl ifconfig.co
 XXX.XXX.XXX.XXX
 ```
 And then check the location of this ip address [here](https://ifconfig.co) for example.
+
+You can do the same command (just to be sure) for Prowlarr and Flaresolverr, they have the same ip address.
 
 ### Update docker's images
 #### Update one specific image
@@ -237,13 +238,12 @@ To access services: (`IP` is the ip of your server)
 | **Service**          | **Address**  |
 |----------------------|--------------|
 | Transmission-openvpn | `<IP>:8000`  |
-| Jackett              | `<IP>:8001`  |
+| Prowlarr             | `<IP>:8001`  |
 | FlareSolverr         | `<IP>:8002`  |
 | Jellyfin             | `<IP>:8003`  |
 | Jellyseerr           | `<IP>:8004`  |
 | Radarr               | `<IP>:8010`  |
 | Sonarr               | `<IP>:8011`  |
-| Removarr             | `<IP>:8012`  |
 
 ## Reverse Proxy
 
@@ -333,86 +333,28 @@ dns_ovh_consumer_key = agf6hU1g13uj86XXXXXXXXXfv1l2n3g4j
 * fill the information for: `*.yourdomain.com` and `yourdomain.com`
 
 ## Setup all the services
-### Transmission
+### Transmission-openvpn
 
 Nothing to setup or maybe the "Speed Limits" depending on your internet connection.
-
-### Jackett
-
-Check the box:
-
-- External access
-- Cache enabled (recommended)
-
-Add these values:
-
-- "Cache TTL (seconds):" `2100`
-- "Cache max results per indexer:" `1000`
-- "FlareSolverr API URL:" `http://10.10.66.100:8191`    # **if you don't change anything on the docker-compose, that's it**
-- "FlareSolverr Max Timeout (ms):" `100000`
-
-Leave the rest blank.
-
-Add your indexer(s).
 
 ### Radarr & Sonarr
 
 Follow these [guides](https://trash-guides.info/).
 
-This is a config to prefer download WEB-DL 1080p x264 *NOT 10bit* files.
+I create a config to prefer download WEB-DL - MULTi (Original language + Truefrench) - 1080p - h264 - and NO HDR/10 bit.
 
-#### Radarr Settings
+If you want to have the same config, see the [`recyclarr-setup`](recyclarr-config) folder.
 
-Format: `Name: X|req|neg ; regex`
-
-> Name: name of the condition
-
-> X: neither "Negate" nor "Required" checked
-
-> regex: Regular Expression
-
-If there is **something** before the condition, it means that when you clicked "import", you should choose the **something** instead of **Release title**.
+#### Radarr/Sonarr Settings
 
 1. Media Management:
     - check `Replace Illegal Characters`
     - Colon Replacement: `Delete`
-    - Path /downloads/medias/movies
-2. Profiles
-    - ![Profiles](radarr-profiles.png)
+    - Path `/downloads/medias/movies` (for sonarr: `/downloads/medias/series`)
+2. Profiles : make
 3. Quality: Not changed
-4. Custom Formats: global
-    1. 10bit: req ; `\b10bit\b`
-    2. 3D:
-        1. 3D: X ; `\b3d|sbs|half[ .-]ou|half[ .-]sbs\b`
-        2. BluRay3D: X ; `\b(BluRay3D)\b`
-    5. x265 (HD):
-        1. x265/HEVC: req ; `[xh][ ._-]?265|\bHEVC(\b|\d)`
-        2. **Resolution** Not 2160p: reg+neg ; `R2160p`
-    7. HDR-10-10+:
-        1. HDR10+: req ; `\bHDR10(\+|P(lus)?\b)`
-        2. HDR10: req ; `\bHDR10(\b[^+|Plus])`
-        3. Not DV HDR10: neg+req ; `^(?=.*\b(DV|DoVi|Dolby[ .]?Vision)\b)(?=.*\b(HDR(10)?(?!\+))\b)`
-        4. HDR: req ; `\b(HDR)\b`
-        5. Not DV ; neg+req ; `\b(dv|dovi|dolby[ .]?vision)\b`
-        6. Not PQ: neg+req ; `\b(PQ)\b`
-        7. Not HLG: neg+req ; `\bHLG(\b|\d)`
-        8. Not SDR: neg+req ; `\bSDR(\b|\d)`
-        9. **Release Group** Not RlsGrp (Missing HDR): neg+req ; `\b(FraMeSToR|HQMUX|SiCFoI)\b`
-4. Custom Formats: French settings
-    1. French Audio:
-        1. **Language** French Language: X ; `French`
-        2. French Original Version: X ; `\bVOF\b`
-        3. TRUEFRENCH: X ; `\b(TRUEFRENCH|VFF?)\b`
-        4. French International: X ; `\bVF(I|\d)\b`
-    5. Multi Audio:
-        1. MULTi: X ; `\b(MULTi)(\d|\b)`
-        2. VO and VF: X ; `^(?=.*\b(VO)\b)(?=.*\b(VF(F|I)?)\b)`
-    6. Multi French:
-        1. MULTi: req ; `\b(MULTi)(\b|\d)`
-        2. **Language** Original Audio: req ; `Original`
-        3. **Language** French Audio: req ; `French`
-    7. VFF: req ; `\b(TRUEFRENCH|VFF)\b`
-5. Indexer: Add Torznab ; on Jackett click on "Copy Torznab Feed" and paste it in "URL" and copy-paste the API key pf jackett in API ; check everything ; select the categories you want
+4. Custom Formats: automatically imported with recyclarr
+5. Indexer: it'll be added automatically with Prowlarr
 6. Download Client:
     - add transmission
     - host: 10.10.66.100
@@ -423,26 +365,28 @@ If there is **something** before the condition, it means that when you clicked "
     - check `Remove Completed`
     - `Remote Path Mappings`: Host: `10.10.66.100 (Transmission)` ; Remote Path: `/data/completed` ; Local Path: `/data/completed`
 
-#### Sonarr Settings
+> [!IMPORTANT]
+> Go under `settings/general` and copy the API key, you'll need it for Prowlarr
 
-1. Media Management:
-    - check `Replace Illegal Characters`
-    - Path /downloads/medias/series
-2. Profiles:
-    - ![Quality Profiles](sonarr-profiles.png)
-    - Language Profile: Multi: check English and French, and move them to the top of the list (English first, then French)
-    - [Release Profiles](https://trash-guides.info/Sonarr/Sonarr-Release-Profile-RegEx/)
-    - You can add `/\bHDR(\b|\d)/` and `10bit` at `-10000` to avoid HDR and 10bit releases
-    - For Multi audio (VO+VFF):
-        ```
-        /\bMULTi(\b|\d)/i ; 10000
-        /\bMULTi(\b|\d)/i ; 10000
-        /\bVOF(\b|\d)/i   ; 8000
-        /\b(TRUEFRENCH|VFF?)(\b|\d)/i ; 6000
-        /\bFR(A|ENCH)?(\b|\d)/i ; 4000
-        /\bFR(A|ENCH)?(\b|\d)/i ; 3000
-        ```
-    - The others settings are the same as in radarr.
+### Prowlarr
+
+Add your indexer. In `Tags` field, add "flaresolverr".
+
+In order to add `Flaresolverr` proxy:
+
+- go to `Settings > Indexers`
+- add "Flaresolverr" 
+- make sure the tag is "flaresolverr"
+- add this ip address: "http://10.10.66.100:8191"
+- save
+
+Connect to Radarr/Sonarr:
+
+- go to `Settings > Apps`
+- add radarr:
+  - full sync
+  - prowlarr server: http://10.10.66.100:9696
+  - radarr server: http://10.10.66.110:7878
 
 ### Jellyfin
 
@@ -512,10 +456,9 @@ And if you don't want to open port on your router (or if you can't):
 
 I provide some webhooks for Jellyfin. These webhooks are used for:
 
+- [Any API (WhatsApp in my case)](#any-api-link)
 - [Discord](#discord-webhook)
-- [Microsoft Teams](#microsoft-teams-webhook)
-- [WhatsApp (old-method)](#old-method-whatsapp-webhook)
-- [WhatsApp (new-method)](#new-method-whatsapp-webhook)
+- [Microsoft Teams](#ms-teams-webhook)
 
 First of all, you need to install the Jellyfin plugin called "Webhooks": Jellyfin > Dashboard > Plugins > Catalog > Webhook
 
@@ -528,112 +471,74 @@ $ docker-compose restart jellyfin
 
 Now, go back to Jellyfin in the Plugins tab and click on Webhook.
 
-The "*Server Url*" is your Jellyfin URL. If you expose it on internet, it's something like this: https://yourdomainname.com/jellyfin
+The "*Server Url*" is your Jellyfin URL. If you expose it on internet, it's something like this: https://jellyfin.yourdomainname.com/
 
 *If you don't have a domain name, Jellyfin will not be able to display images (posters) in the Discord/Teams webhooks.*
 
-#### Global Webhook
+<details close>
+  <summary id="any-api-link">Any API</summary>
+    <p>This method will allow you to send a webhook to any service/api you want in a very easy way.</p>
+    <p>This consists of using your own API and create your request in Python (which is more flexible than the Jellyfin Webhook plugin) and send it to the API you want.</p>
+    <h5>Steps:</h5>
+    <ol>
+      <li>
+        <b>Modify the <em>jellyhookapi.py</em> file:</b><br>
+        You'll need to customize the <a href="https://github.com/garnajee/JellyfinAPI/blob/master/jellyhookapi.py">JellyHookAPI/jellyhookapi.py</a> file according to your specific needs.
+      </li>
+      <li>
+        <b>Add the Handlebars template:</b><br>
+        Navigate to Jellyfin > Plugin > Webhook > "Generic Destination" and add the <a href="webhooks/jellyfin/global-item.handlebars">Handlebars template</a>.
+      </li>
+      <li>
+        <b>Build and run the Docker image:</b><br>
+        For detailed instructions on building and running the Docker image, refer to the <a href="https://github.com/garnajee/JellyHookAPI/tree/master#jellyhookapi">JellyHookAPI/README</a> in the JellyHookAPI folder.
+      </li>
+    </ol>
+</details>
 
-This method will allow you to send a webhook to any service/api you want in a very easy way.
+<details close>
+  <summary id="discord-webhook">Discord Webhook</summary>
+    <p>To add a <strong>Discord</strong> webhook:</p>
+    <ul>
+      <li>click on "Add Discord Destination"</li>
+      <li>"<em>Webhook Name</em>": what you want</li>
+      <li>"<em>Webhook Url</em>": the discord webhook url</li>
+      <li>"<em>Notification type</em>":</li>
+    <ol>
+      <li>if you want to receive notification when a new item (movie/tv show/...) is added, check "<em>Item Added</em>"</li>
+      <li>or when a user is locked out (because of too much wrong password during connection), check "<em>User Locked Out</em>"</li>
+      <li>or when a user is created/deleted, when a password is changed, ... (for every use case check <a href="webhooks/jellyfin/discord/discord-users.handlebars">this file</a>), check "<em>Authentication</em>" and "<em>User</em>"</li>
+    </ol>
+    <li>"<em>User Filter</em>": personally, I don't check anything here</li>
+    <li>"<em>Item Type</em>": check everything (depending on your webhook template) <strong>except</strong> "<em>Send All Properties</em>"</li>
+    <li>"<em>Template</em>": (copy and paste the content)</li>
+    <ol>
+      <li><a href="webhooks/jellyfin/discord/discord-item.handlebars">webhooks/jellyfin/discord/discord-item.handlebars</a></li>
+      <li><a href="webhooks/jellyfin/discord/discord-users-locked-out.handlebars">webhooks/jellyfin/discord/discord-users-locked-out.handlebars</a></li>
+      <li><a href="webhooks/jellyfin/discord/discord-users.handlebars">webhooks/jellyfin/discord/discord-users.handlebars</a></li>
+    </ol>
+    <li>"<em>Avatar Url</em>": just change the avatar profile picture directly on Discord</li>
+    <li>"<em>Webhook Username</em>": should not be empty, but you can write what you want, the real username is defined directly in Discord</li>
+    <li>"<em>Mention Type</em>": I never used this</li>
+    <li>"<em>Embed Color</em>": color of the embedded message</li>
+  </ul>
+  <p>Then click save.</p>
+</details>
 
-This consists of using your own API and create your request in Python (which is more flexible than the Jellyfin Webhook plugin) and send it to the API you want.
-
-To do this you will need to modify as your needs the [JellyHookAPI/jellyhookapi.py](https://github.com/garnajee/JellyHookAPI/blob/master/jellyhookapi.py) file.
-
-Then, add the [Handlebars template](webhooks/jellyfin/global-item.handlebars) in Jellyfin > Plugin > Webhook > "Generic Destination".
-
-And finally, build and run the docker image.
-
-All these steps are explained in the [JellyHookAPI/README](https://github.com/garnajee/JellyHookAPI/tree/master#jellyhookapi) of the JellyHookAPI folder.
-
-##### Discord Webhook
-
-To add a **Discord** webhook:
-
-- click on "Add Discord Destination"
-- "*Webhook Name*": what you want
-- "*Webhook Url*": the discord webhook url
-- "*Notification type*": 
-  1. if you want to receive notification when a new item (movie/tv show/...) is added, check "*Item Added*"
-  2. or when a user is locked out (because of too much wrong password during connection), check "*User Locked Out*"
-  3. or when a user is created/deleted, when a password is changed, ... (for every use case check [this file](webhooks/jellyfin/discord/discord-users.handlebars)), check "*Authentication \**" and "*User \**"
-- "*User Filter*": personally, I don't check anything here
-- "*Item Type*": check everything (depending on your webhook template) **except** "*Send All Properties*"
-- "*Template*": (copy and paste the content)
-  1. [webhooks/jellyfin/discord/discord-item.handlebars](webhooks/jellyfin/discord/discord-item.handlebars)
-  2. [webhooks/jellyfin/discord/discord-users-locked-out.handlebars](webhooks/jellyfin/discord/discord-users-locked-out.handlebars)
-  3. [webhooks/jellyfin/discord/discord-users.handlebars](webhooks/jellyfin/discord/discord-users.handlebars)
-- "*Avatar Url*": just change the avatar profile picture directly on Discord
-- "*Webhook Username*": should not be empty, but you can write what you want, the real username is defined directly in Discord
-- "*Mention Type*": I never used this
-- "*Embed Color*": color of the embedded message
-
-Then click save.
-
-##### Microsoft Teams Webhook
-
-To add a **Microsoft Teams** webhook:
-
-- click on "Add a Generic Destination"
-- check the steps for Discord, it's the same
-- "*Template*":
-  1. "*Item Added*": [webhooks/jellyfin/ms-teams/teams-items.handlebars](webhooks/jellyfin/ms-teams/teams-items.handlebars)
-  2. "*User Locked Out*": [webhooks/jellyfin/ms-teams/teams-users-locked-out.handlebars](webhooks/jellyfin/ms-teams/teams-users-locked-out.handlebars)
-  3. "*User*": [webhooks/jellyfin/ms-teams/teams-users.handlebars](webhooks/jellyfin/ms-teams/teams-users.handlebars)
-  
-##### Old method WhatsApp Webhook
-
-(***Old method - please refer to [the Global Webhook section](#global-webhook) for the new (and better) method.***)
-
-To add a **WhatsApp** webhook:
-
-Not as easy as the others.
-
-You need to connect your WhatsApp account as if you were logging on WhatsApp Web.
-
-To achieve this, you're going to use another docker-compose to self-host a WhatsApp HTTP API. I'm using [this API](https://github.com/devlikeapro/whatsapp-http-api).
-
-Follow these steps:
-
-```bash
-$ cd /opt/chill
-$ wget https://raw.githubusercontent.com/garnajee/home-server/master/docker-compose-whatsapp.yml
-$ docker-compose --file docker-compose-whatsapp.yml up -d
-```
-
-> Note that the docker-compose I provided is not really optimized, you can add environment variable to better configure. You can check the documentation [here](https://waha.devlike.pro/docs/how-to/config/).
-
-> Feel free to modify and perhaps make a pull request!
-
-Then follow the [official](https://github.com/devlikeapro/whatsapp-http-api#3-start-a-new-session) from step **3** to **5**. For any further information, like the id of a contact or a group, please read the [documentation](https://waha.devlike.pro/docs/how-to/).
-
-Go back to Jellyfin > Plugin > Webhook:
-
-- click on "Add Generic Form Destination"
-- "*Webhook Url*": the **internal** docker ip, if you don't change anything in the docker-compose it should be: `http://10.10.66.200:3000/api/sendText`
-- then check what you want depending on the template
-
-Then copy and paste the template you want:
-
-1. "*Item Added*": [webhooks/jellyfin/whatsapp/whatsapp-items.handlebars](webhooks/jellyfin/whatsapp/whatsapp-items.handlebars)
-2. (very basic) "*User created/deleted*": [webhooks/jellyfin/whatsapp/whatsapp-basic-user.handlebars](webhooks/jellyfin/whatsapp/whatsapp-basic-user.handlebars)
-
-And finally you need to 2 Headers:
-
-1. "*Key*": "accept", "*Value*": "application/json"
-2. "*Key*": "Content-Type", "*Value*": "application/json"
-
-> Please note, that we cannot send images with this API (it's a paid feature).
-
-> (If you want to send the poster, refer to the new method [*(Global Webhook)*](#global-webhook).)
-
-And that's it, you can save.
-
-##### New method WhatsApp Webhook
-
-***Please refer to the [whatsapp-api/README](whatsapp-api#whatsapp-api) to install and configure this API.***
-
-This API allows you to send much more things than the previous one.
+<details close>
+  <summary id="ms-teams-webhook">Microsoft Teams Webhook</summary>
+  <p>To add a <strong>Microsoft Teams</strong> webhook:</p>
+  <ul>
+    <li>click on "Add a Generic Destination"</li>
+    <li>check the steps for Discord, it's the same</li>
+    <li>"<em>Template</em>":</li>
+    <ol>
+      <li>"<em>Item Added</em>": <a href="webhooks/jellyfin/ms-teams/teams-items.handlebars">webhooks/jellyfin/ms-teams/teams-items.handlebars</a></li>
+      <li>"<em>User Locked Out</em>": <a href="webhooks/jellyfin/ms-teams/teams-users-locked-out.handlebars">webhooks/jellyfin/ms-teams/teams-users-locked-out.handlebars</a></li>
+      <li>"<em>User</em>": <a href="webhooks/jellyfin/ms-teams/teams-users.handlebars">webhooks/jellyfin/ms-teams/teams-users.handlebars</a></li>
+    </ol>
+  </ul>
+</details>
 
 ### Fake Ratio
 
