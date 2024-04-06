@@ -8,7 +8,7 @@ This is my perfect docker-compose for my streaming server.
 You'll find two 2 docker-compose, one to create the streaming services and the other one to access them through a reverse proxy.
 
 > [!NOTE]
-> I've also created a `chill-extra` folder that automatically sends notifications on WhatsApp as soon as media is added in Jellyfin and add the [removarr](https://github.com/garnajee/removarr) docker.
+> I've also created a [`chill-extra`](chill-extra) folder that automatically sends notifications on WhatsApp as soon as media is added in Jellyfin, add the [removarr](https://github.com/garnajee/removarr) docker and other scripts.
 
 
 > [!IMPORTANT]
@@ -65,7 +65,7 @@ Synology Server:
 - Create a docker [user](https://trash-guides.info/Hardlinks/How-to-setup-for/Synology/#create-a-user)
   - once it's done, connect on SSH and type `id <username>` and write down the `uid` and `gid` respectively `PUID` and `PGID` for the [`.env`](.env-example).
 - Connect on SSH and download `docker-compose` [latest command version](https://docs.docker.com/compose/install/other/):
-  - or use my custom script to [download the latest docker-compose release](update-docker-compose.sh)
+  - or use my custom script to [download the latest docker-compose release](chill-extra/#update-docker-compose.sh)
 
 - check version: `$ docker-compose version`
 
@@ -343,7 +343,7 @@ Follow these [guides](https://trash-guides.info/).
 
 I create a config to prefer download WEB-DL - MULTi (Original language + Truefrench) - 1080p - h264 - and NO HDR/10 bit.
 
-If you want to have the same config, see the [`recyclarr-setup`](recyclarr-config) folder.
+If you want to have the same config, see the [`recyclarr-setup`](recyclarr-setup) folder.
 
 #### Radarr/Sonarr Settings
 
@@ -351,7 +351,7 @@ If you want to have the same config, see the [`recyclarr-setup`](recyclarr-confi
     - check `Replace Illegal Characters`
     - Colon Replacement: `Delete`
     - Path `/downloads/medias/movies` (for sonarr: `/downloads/medias/series`)
-2. Profiles : make
+2. Profiles : click on your profile and `Edit groups`, then ungroup your selected qualities
 3. Quality: Not changed
 4. Custom Formats: automatically imported with recyclarr
 5. Indexer: it'll be added automatically with Prowlarr
@@ -494,6 +494,7 @@ The "*Server Url*" is your Jellyfin URL. If you expose it on internet, it's some
         For detailed instructions on building and running the Docker image, refer to the <a href="https://github.com/garnajee/JellyHookAPI/tree/master#jellyhookapi">JellyHookAPI/README</a> in the JellyHookAPI folder.
       </li>
     </ol>
+    <p>Finally, in my case, I wanted to send notification to a WhatsApp group. If you wan to do this, follow <a href="whatsapp-api#whatsapp-api">these instructions</a></p>
 </details>
 
 <details close>
@@ -542,10 +543,58 @@ The "*Server Url*" is your Jellyfin URL. If you expose it on internet, it's some
 
 ### Fake Ratio
 
-If you need to fake your upload in order to have a ratio >= 1, you can use [Ratio.py](https://github.com/garnajee/Ratio.py).
+If you need to fake your upload stats on (semi-)private indexers, in order to have a ratio >= 1.
 
-I don't recommend using this indefinitely, please consider sharing to the community.
+> [!CAUTION]
+> I don't recommend using this indefinitely, please consider sharing to the community.
+
+You can use [Ratio.py](https://github.com/garnajee/Ratio.py).
+
+To use this python script in a secure way, you can add it in the `transmission-openvpn` docker (already running).
+That way, everything will go through the vpn.
+
+<details close>
+  <summary>To do this, follow these steps:</summary>
+    <ul>
+      <li>create the folder:</li>
+    </ul>
+
+    <pre><code>$ cd /opt/chill
+    $ mkdir -p transovpn/ratio
+    </code></pre>
+
+    <ul>
+      <li>add this in the <code>docker-compose.yml</code>:</li>
+    </ul>
+
+    ```diff
+        volumes:
+          - ${BASE}/transovpn/config:/config
+          - ${DOWNLOADS}:/data
+    +     - ${BASE}/transovpn/ratio/:/home/
+    ```
+
+    <ul>
+      <li>then download the content of <code>Ratio.py</code> repository inside the <code>ratio</code> folder.</li>
+      <li>download a very popular and highly leeched torrent file and put it inside the <code>ratio</code> folder.</li>
+      <li>modify the <code>config.json</code> file to match the torrent file name and path. Add your desired upload speed.</li>
+      <li>install python and run the script:</li>
+    </ul>
+
+    <pre><code>$ cd /opt/chill/
+    $ docker exec -it transovpn bash
+    # apt update &amp;&amp; apt install python3 python3-pip
+    # cd /home
+    # pip install -r requirements.txt
+    # nohup python3 ratio.py -c config.json &amp;
+    </code></pre>
+
+    <ul>
+      <li>to view logs : <code># tail -f nohup.out</code></li>
+    </ul>
+</details>
 
 # License
 
 This project is under [MIT](LICENSE) License.
+
