@@ -18,6 +18,7 @@ services:
       TRANSMISSION_RPC_AUTHENTICATION_REQUIRED: true
       LOCAL_NETWORK: ${NETWORKIP}
       OPENVPN_OPTS: "--inactive 3600 --ping 10 --ping-exit 60"
+      TZ: ${TZ}
     dns:
       - 1.1.1.1 # CloudFlare
       - 1.0.0.1
