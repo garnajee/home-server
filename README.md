@@ -65,7 +65,7 @@ Synology Server:
 - Create a docker [user](https://trash-guides.info/Hardlinks/How-to-setup-for/Synology/#create-a-user)
   - once it's done, connect on SSH and type `id <username>` and write down the `uid` and `gid` respectively `PUID` and `PGID` for the [`.env`](.env-example).
 - Connect on SSH and download `docker-compose` [latest command version](https://docs.docker.com/compose/install/other/):
-  - or use my custom script to [download the latest docker-compose release](chill-extra/#update-docker-compose.sh)
+  - or use my custom script to [download the latest docker-compose release](chill-extra/update-docker-compose.sh)
 
 - check version: `$ docker-compose version`
 
