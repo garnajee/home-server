@@ -9,6 +9,6 @@ You'll find here the following instructions to be able to download files in that
 - `h264`
 - and no `HDR` or `10 bits`.
 
-> ![NOTE]
+> [!NOTE]
 > Soon...
 
