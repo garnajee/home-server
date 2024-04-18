@@ -55,8 +55,8 @@ To install Recyclarr, follow these steps:
    curl -O https://raw.githubusercontent.com/garnajee/home-server/master/recyclarr-setup/docker-compose.yaml
    ```
 
-   > [!WARNING]
-   > This docker-compose is associated with the `net-chill` docker subnet. Recyclarr needs to be on the same subnet as radarr and sonarr.
+> [!WARNING]
+> This docker-compose is associated with the `net-chill` docker subnet. Recyclarr needs to be on the same subnet as radarr and sonarr.
 4. Download the provided `.env-example` file and rename it to `.env`. Modify the `.env` file according to your environment:
    ```bash
    curl -o .env https://raw.githubusercontent.com/garnajee/home-server/master/recyclarr-setup/.env-example
