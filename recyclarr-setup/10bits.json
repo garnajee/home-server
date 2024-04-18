@@ -1,0 +1,27 @@
+{
+  "name": "10 bits",
+  "includeCustomFormatWhenRenaming": false,
+  "specifications": [
+    {
+      "name": "10 bits",
+      "implementation": "ReleaseTitleSpecification",
+      "implementationName": "Release Title",
+      "infoLink": "https://wiki.servarr.com/radarr/settings#custom-formats-2",
+      "negate": false,
+      "required": true,
+      "fields": [
+        {
+          "order": 0,
+          "name": "value",
+          "label": "Language",
+          "helpText": "Custom Format RegEx is Case Insensitive",
+          "value": "10[-.\\s]?bits?",
+          "type": "textbox",
+          "advanced": false,
+          "privacy": "normal",
+          "isFloat": false
+        }
+      ]
+    }
+  ]
+}
