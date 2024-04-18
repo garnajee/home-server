@@ -11,17 +11,6 @@ You'll find here the following instructions to be able to download files in that
 
 For more detailed instructions and additional configurations, please refer to the [Recyclarr wiki](https://recyclarr.dev/wiki/).
 
----
-  - go sur radarr/sonarr : change langauge to "Any"
-  - supprimer ancien profil (dafault one) sur radarr/sonarr
-- ajout de custom profil spécifique non dispo dans les trashguides
-
----
----
----
-
-# Guide to Installing, Configuring, and Using Recyclarr Docker
-
 ## Table of Contents
 
 1. [Installation](#installation)
