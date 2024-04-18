@@ -1,24 +1,17 @@
 # Recyclarr
 
-[Recyclarr](https://github.com/recyclarr/recyclarr) will help you to automate the configuring Radarr/Sonarr qualites.
+[Recyclarr](https://github.com/recyclarr/recyclarr) will help you to automate the configuring Radarr/Sonarr qualities.
 
 You'll find here the following instructions to be able to download files in that specific quality:
 
 - `MULTi` (Original version + Truefrench (in my case))
 - `1080p`
 - `h264`
-- and **no** `HDR` or `10 bits`.
+- and **no** `HDR` or `10 bits` (for the last one, refer to the [custom script part](#custom-script))
+
+For more detailed instructions and additional configurations, please refer to the [Recyclarr wiki](https://recyclarr.dev/wiki/).
 
 ---
-- installation
-- setup temporaire
-  - creation des dossiers
-  - téléchargement du docker compose
-    - rappel que le network DC doit etre dans le meme que celui de radarrr/sonarr
-  - téléchargement des conf \*arr dans le bon emplacement
-  - lancement de recyclarr pour la 1ere fois -> création de la config
-  - 2e lancement
-    - sync des profils radarr/sonarr v4
   - go sur radarr/sonarr : change langauge to "Any"
   - supprimer ancien profil (dafault one) sur radarr/sonarr
 - ajout de custom profil spécifique non dispo dans les trashguides
@@ -37,6 +30,7 @@ You'll find here the following instructions to be able to download files in that
    - [Downloading Configuration Files](#downloading-configuration-files)
    - [Second Launch](#second-launch)
 3. [Additional Configuration](#additional-configuration)
+4. [Import Your Custom Profile](#custom-script)
 
 ---
 
@@ -64,21 +58,23 @@ To install Recyclarr, follow these steps:
 
 ## Setup
 
-Throughout the process you must be in `recyclarr` folder
+Throughout the process you must be in the `recyclarr` folder
 
 ### First-time Launch of Recyclarr
 
-Run the following command to initialize Recyclarr and create a starter configuration file:
+Run the following command to initialize Recyclarr:
 ```bash
 docker-compose run --rm recyclarr config create
 ```
 
+This will also create a starter configuration file (`config/recyclarr.yml`), but we won't use this one.
+
 ### Downloading Configuration Files
 
-After launching the first-time setup, download the Radarr and Sonarr configuration files:
+After launching the first-time setup, download my predefined Radarr and Sonarr configuration files:
 ```bash
-curl -o config/radarr.yml https://raw.githubusercontent.com/garnajee/home-server/master/recyclarr-setup/radarr.yml
-curl -o config/sonarr.yml https://raw.githubusercontent.com/garnajee/home-server/master/recyclarr-setup/sonarr.yml
+curl -o config/configs/radarr.yml https://raw.githubusercontent.com/garnajee/home-server/master/recyclarr-setup/radarr.yml
+curl -o config/configs/sonarr.yml https://raw.githubusercontent.com/garnajee/home-server/master/recyclarr-setup/sonarr.yml
 ```
 
 ### Second Launch
@@ -103,5 +99,36 @@ Inside the container shell, execute the following commands:
 
 ## Additional Configuration
 
+After setting up the Recyclarr configurations, there are a few additional configurations you need to do:
 
+### Change The Quality Profile Language in Radarr/Sonarr
+
+1. Open your Radarr or Sonarr web interface.
+2. Navigate to Settings > Profiles.
+3. Click on your newly created profile ("Any")
+3. Locate the "Language" option and set it to "Any" to ensure maximum compatibility
+
+### Remove Default Profile in Radarr/Sonarr
+
+1. In your Radarr or Sonarr web interface, go to Settings > Profiles.
+2. Find the default profile and remove it, as it may conflict with Recyclarr's custom profiles imported.
+
+---
+
+# Custom Script
+
+I create a Python script for importing custom formats.
+
+If you have specific requirements, you can use my script to import your custom format into Radarr/Sonarr.
+
+In order to use the `import-cf.py` script, follow these steps:
+
+- install the `requests` lib: `pip install requests`
+- download the script and custom format:
+```bash
+curl -O https://raw.githubusercontent.com/garnajee/home-server/master/recyclarr-setup/10bits.json 
+curl -O https://raw.githubusercontent.com/garnajee/home-server/master/recyclarr-setup/import-cf.py
+```
+- modify the script: Change the value of `base_url` and `api_key` with your Radarr/Sonarr corresponding values.
+- run the script: `python3 impor-cf.py`
 
