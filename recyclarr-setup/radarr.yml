@@ -1,0 +1,104 @@
+# service type:
+radarr:
+  # instance name:
+  movies:
+    base_url: http://10.10.66.110:7878
+    api_key: yOuRaPiKeY
+
+    quality_definition:
+      type: movie
+
+    # Uncomment the below properties to specify one or more quality profiles that should be
+    # updated with scores from the guide for each custom format. Without this, custom formats
+    # are synced to Radarr but no scores are set in any quality profiles.
+    # Quality Profile Configuration
+    quality_profiles:
+      - name: any-1080p
+        reset_unmatched_scores:
+          enabled: true
+        upgrade:
+          allowed: true
+          #until_quality: WEB-1080p
+          until_quality: WEBDL-1080p
+        #score_set: sqp-1-1080p
+        quality_sort: bottom
+        qualities:
+          #- name: Bluray-1080p
+          #- name: WEB-1080p
+          - name: WEBDL-1080p
+            qualities:
+              - WEBDL-1080p
+              - WEBRip-1080p
+              - WEBDL-720p
+              - WEBRip-720p
+              - Bluray-1080p
+              - Bluray-720p
+              - HDTV-1080p
+              - HDTV-720p
+    #  - name: Quality Profile 2
+    #    #score: -9999 # Optional score to assign to all CFs. Overrides scores in the guide.
+    #    #reset_unmatched_scores: true # Optionally set other scores to 0 if they are not listed in 'names' above.
+
+    # Set to 'true' to automatically remove custom formats from Radarr when they are removed from
+    # the guide or your configuration. This will NEVER delete custom formats you manually created!
+    delete_old_custom_formats: true
+    replace_existing_custom_formats: true
+
+
+    custom_formats:
+      # A list of custom formats to sync to Radarr.
+      # Use `recyclarr list custom-formats radarr` for values you can put here.
+      # https://trash-guides.info/Radarr/Radarr-collection-of-custom-formats/
+      # FULL UPDATED LIST HERE: https://github.com/TRaSH-Guides/Guides/tree/master/docs/json/radarr/cf
+      - trash_ids:
+          # unwanted
+          - ed38b889b31be83fda192888e2286d83 # BR-DISK
+          - 90a6f9a284dff5103f6346090e6280c8 # LQ
+          - b8cd450cbfa689c0259a01d9e29ba3d6 # 3D
+          - dc98083864ea246d05a42df0d05f81cc # x265 (HD) # 720/1080p no x265 = x265 (720/1080p) = x265 (HD)
+            #
+          # HDR Formats
+          - e23edd2482476e595fb990b12e7c609c # DV HDR10
+          - 58d6a88f13e2db7f5059c41047876f00 # DV
+          - 55d53828b9d81cbe20b02efd00aa0efd # DV HLG
+          - a3e19f8f627608af0211acd02bf89735 # DV SDR
+          - b974a6cd08c1066250f1f177d7aa1225 # HDR10+
+          - dfb86d5941bc9075d6af23b09c2aeecd # HDR10
+          - e61e28db95d22bedcadf030b8f156d96 # HDR
+          - 2a4d9069cc1fe3242ff9bdaebed239bb # HDR (undefined)
+          - 08d6d8834ad9ec87b1dc7ec8148e7a1f # PQ
+          - 9364dd386c9b4a1100dde8264690add7 # HLG
+        quality_profiles:
+          - name: any-1080p
+            score: -10000
+
+          # audio
+      - trash_ids:
+          - 72b1548df1ac3175ca105a9ce7043c91 # multi audio
+        quality_profiles:
+          - name: any-1080p
+            score: 2000
+      - trash_ids:
+          - 4cafa20d5584f6ba1871d1b8941aa3cb # vof
+        quality_profiles:
+          - name: any-1080p
+            score: 1000
+      - trash_ids:
+          - 6d27683346c78d6a3f772e30877910a7 # french audio
+        quality_profiles:
+          - name: any-1080p
+            score: 500
+
+      - trash_ids:
+          # Streaming Services
+          - 84272245b2988854bfb76a16e60baea5 # DSNP
+          - 5763d1b0ce84aff3b21038eea8e9b8ad # HMAX
+          - 40e9380490e748672c2522eaaeb692f7 # ATVP
+          - b3b3a6ac74ecbd56bcdbefa4799fb9df # AMZN
+          - 170b1d363bd8516fbf3a3eb05d4faff6 # NF
+
+          #Misc
+          - e7718d7a3ce595f289bfee26adc178f5 # Repack/Proper
+          - ae43b294509409a6a13919dedd4764c4 # Repack2
+            #- 2899d84dc9372de3408e6d8cc18e9666 # x264
+
