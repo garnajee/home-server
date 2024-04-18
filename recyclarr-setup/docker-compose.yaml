@@ -1,0 +1,17 @@
+services:
+  recyclarr:
+    image: recyclarr/recyclarr
+    container_name: recyclarr
+    user: ${PUID}:${PGID}
+    networks: [net-chill]
+    network_mode: "host"
+    volumes:
+      - ${recyconfig}:/config
+    environment:
+      - TZ=${TZ}
+
+networks:
+  net-chill:
+    name: net-chill
+    external: true
+
