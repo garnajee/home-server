@@ -40,7 +40,7 @@ To install Recyclarr, follow these steps:
 
 > [!WARNING]
 > This docker-compose is associated with the `net-chill` docker subnet. Recyclarr needs to be on the same subnet as radarr and sonarr.
-4. Download the provided `.env-example` file and rename it to `.env`. Modify the `.env` file according to your environment:
+4. Download the provided `.env-example` file (the command renamed it to `.env`). Modify the `.env` file according to your environment:
    ```bash
    curl -o .env https://raw.githubusercontent.com/garnajee/home-server/master/recyclarr-setup/.env-example
    ```
@@ -68,7 +68,7 @@ curl -o config/configs/sonarr.yml https://raw.githubusercontent.com/garnajee/hom
 
 ### Second Launch
 
-Modify the configuration of `radarr.yml` and `sonarr.yml` and especially the `base_url` and `api_key` fields.
+Modify the configuration of `radarr.yml` and `sonarr.yml` (located in `config/config/`) and especially the `base_url` and `api_key` fields.
 
 Then, launch Recyclarr again:
 ```bash
@@ -106,7 +106,7 @@ After setting up the Recyclarr configurations, there are a few additional config
 
 # Custom Script
 
-I create a Python script for importing custom formats.
+I created a Python script for importing custom formats.
 
 If you have specific requirements, you can use my script to import your custom format into Radarr/Sonarr.
 
