@@ -108,7 +108,7 @@ After setting up the Recyclarr configurations, there are a few additional config
 
 I created a Python script for importing custom formats.
 
-If you have specific requirements, you can use my script to import your custom format into Radarr/Sonarr.
+If you have specific requirements, you can use my script to import your custom format into Radarr/Sonarr. You'll have to modify the "`json_file_path`" value in the script.
 
 In order to use the `import-cf.py` script, follow these steps:
 
