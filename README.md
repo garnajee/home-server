@@ -93,7 +93,7 @@ $ rm -rf /opt/chill
 * Create the structure for every services
 
 ```bash
-$ mkdir -p /opt/chill/{transovpn/{config},prowlarr/config,jellyfin/config,jellyseerr/config,radarr/config,sonarr/config,storage/downloads/{completed,incomplete,watch,medias/{movies,series}}}
+$ mkdir -p /opt/chill/{{jellyfin,jellyseerr,prowlarr,radarr,sonarr,transovpn}/config,storage/downloads/{watch,completed,incomplete,medias/{movies,series}}}
 ```
 
 Here is what it's going to create:
