@@ -363,7 +363,7 @@ If you want to have the same config, see the [`recyclarr-setup`](recyclarr-setup
     - recent priority: `last`
     - older priority: `last`
     - check `Remove Completed`
-    - `Remote Path Mappings`: Host: `10.10.66.100 (Transmission)` ; Remote Path: `/data/completed` ; Local Path: `/data/completed`
+    - `Remote Path Mappings`: Host: `10.10.66.100 (Transmission)` ; Remote Path: `/data/completed/` ; Local Path: `/downloads/completed/`
 
 > [!IMPORTANT]
 > Go under `settings/general` and copy the API key, you'll need it for Prowlarr
