@@ -9,6 +9,8 @@ services:
       - ${BASE}/transovpn/config:/config
       - ${DOWNLOADS}:/data
     environment:
+      PUID: ${PUID}
+      PGID: ${PGID}
       OPENVPN_PROVIDER: ${VPN_PROVIDER}
       OPENVPN_CONFIG: ${VPN_COUNTRIES}
       OPENVPN_USERNAME: ${VPN_USERNAME}
