@@ -1,0 +1,4 @@
+[submodule "JellyHookAPI"]
+	path = JellyHookAPI
+	url = https://github.com/garnajee/JellyHookAPI.git
+	branch = main
