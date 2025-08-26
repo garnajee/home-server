@@ -1,0 +1,132 @@
+[
+  {
+    "trash_id": "c1f727827827282717912444",
+    "name": "VOF (+5000)",
+    "includeCustomFormatWhenRenaming": false,
+    "specifications": [
+      {
+        "name": "VOF",
+        "implementation": "ReleaseTitleSpecification",
+        "negate": false,
+        "required": true,
+        "fields": {
+          "value": "\\b(VOF)\\b"
+        }
+      }
+    ]
+  },
+  {
+    "trash_id": "f5e933e887e5470d9a6c208c02c2e0b1",
+    "name": "MULTi + VFF/TRUEFRENCH (+4000)",
+    "includeCustomFormatWhenRenaming": true,
+    "specifications": [
+      {
+        "name": "Multi",
+        "implementation": "ReleaseTitleSpecification",
+        "negate": false,
+        "required": true,
+        "fields": {
+          "value": "\\b(MULTi)(\\d|\\b)"
+        }
+      },
+      {
+        "name": "VFF/TRUEFRENCH",
+        "implementation": "ReleaseTitleSpecification",
+        "negate": false,
+        "required": true,
+        "fields": {
+          "value": "\\b(TRUEFRENCH|VFF)\\b"
+        }
+      }
+    ]
+  },
+  {
+    "trash_id": "8c5e6f6a7d51458e94a864d3f3f2022e",
+    "name": "MULTi + VF2 (+3500)",
+    "includeCustomFormatWhenRenaming": true,
+    "specifications": [
+      {
+        "name": "Multi",
+        "implementation": "ReleaseTitleSpecification",
+        "negate": false,
+        "required": true,
+        "fields": {
+          "value": "\\b(MULTi)(\\d|\\b)"
+        }
+      },
+      {
+        "name": "VF2",
+        "implementation": "ReleaseTitleSpecification",
+        "negate": false,
+        "required": true,
+        "fields": {
+          "value": "\\b(VF2)\\b"
+        }
+      }
+    ]
+  },
+  {
+    "trash_id": "8c5e6f6a7d51458e94a864d3f3f2022d",
+    "name": "VFF/TRUEFRENCH (+3000)",
+    "includeCustomFormatWhenRenaming": true,
+    "specifications": [
+      {
+        "name": "VFF",
+        "implementation": "ReleaseTitleSpecification",
+        "negate": false,
+        "required": true,
+        "fields": {
+          "value": "\\b(VFF|TRUEFRENCH)\\b"
+        }
+      }
+    ]
+  },
+  {
+    "trash_id": "8ba12c7e0e14e793538174c679126996",
+    "name": "MULTi (générique) (+2000)",
+    "includeCustomFormatWhenRenaming": false,
+    "specifications": [
+      {
+        "name": "Multi",
+        "implementation": "ReleaseTitleSpecification",
+        "negate": false,
+        "required": true,
+        "fields": {
+          "value": "\\b(Multi)(?![ ._-]?sub(s)?)(\\b|\\d)"
+        }
+      }
+    ]
+  },
+  {
+    "trash_id": "7611a14a2a164b389f4104c99557a2f5",
+    "name": "VF / VFI (+500)",
+    "includeCustomFormatWhenRenaming": true,
+    "specifications": [
+      {
+        "name": "VF",
+        "implementation": "ReleaseTitleSpecification",
+        "negate": false,
+        "required": true,
+        "fields": {
+          "value": "\\b(VFI|VF(?![. ]?Q))\\b"
+        }
+      }
+    ]
+  },
+  {
+    "trash_id": "7878a14a2a164b389f4104c99557a2f5",
+    "name": "VFQ (-1000)",
+    "includeCustomFormatWhenRenaming": false,
+    "specifications": [
+      {
+        "name": "VFQ",
+        "implementation": "ReleaseTitleSpecification",
+        "negate": false,
+        "required": true,
+        "fields": {
+          "value": "\\b(VFQ)\\b"
+        }
+      }
+    ]
+  }
+]
