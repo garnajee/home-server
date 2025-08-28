@@ -31,7 +31,7 @@ services:
     ports:
       - "0.0.0.0:8000:9091" # transmission
       - "0.0.0.0:8001:9696" # prowlarr
-      - "0.0.0.0:8002:8191" # flaresolverr
+      - "0.0.0.0:8002:8191" # flaresolverr/byparr
     networks:
       net-chill:
         ipv4_address: 10.10.66.100
@@ -48,35 +48,58 @@ services:
       - ${BASE}/prowlarr/config:/config
     network_mode: "service:transmission-openvpn" # Add to the transmission-openvpn Container Network
     depends_on:
-      - transmission-openvpn # Set dependency on transmission-openvpn Container
+      transmission-openvpn # Set dependency on transmission-openvpn Container
+        condition: service_healthy
     healthcheck: # Here you will check if transmission is reachable from the Jackett container via localhost
       # test: curl -f http://localhost:8000 || exit 1
       # Use this test if you protect your transmission with user and password
       # comment test above and un-comment line below.
-      test: curl -f http://${RPC_USERNAME}:${RPC_PASSWORD}@localhost:8000 || exit 1
+      # test: curl -f http://${RPC_USERNAME}:${RPC_PASSWORD}@localhost:8000 || exit 1
+      test: ["CMD-SHELL", "curl -f http://localhost:9696 || exit 1"]
       interval: 5m00s
       timeout: 10s
       retries: 2
 
-  flaresolverr:
-    image: ghcr.io/flaresolverr/flaresolverr:latest
-    container_name: flaresolverr
+  #flaresolverr:
+  #  image: ghcr.io/flaresolverr/flaresolverr:latest
+  #  container_name: flaresolverr
+  #  restart: always
+  #  environment:
+  #    - LOG_LEVEL=${LOG_LEVEL:-info}
+  #    - LOG_HTML=${LOG_HTML:-false}
+  #    - CAPTCHA_SOLVER=${CAPTCHA_SOLVER:-none}
+  #    - TZ=${TZ}
+    # ports:
+    #   - "127.0.0.1:8002:8191"
+  #  network_mode: "service:transmission-openvpn"
+  #  depends_on:
+  #    - transmission-openvpn
+  #  healthcheck:
+  #    test: curl -f http://${RPC_USERNAME}:${RPC_PASSWORD}@localhost:8000 || exit 1
+  #    interval: 5m00s
+  #    timeout: 10s
+  #    retries: 2
+
+  byparr:
+    image: ghcr.io/thephaseless/byparr:latest
+    container_name: byparr
     restart: always
     environment:
       - LOG_LEVEL=${LOG_LEVEL:-info}
-      - LOG_HTML=${LOG_HTML:-false}
-      - CAPTCHA_SOLVER=${CAPTCHA_SOLVER:-none}
       - TZ=${TZ}
+    volumes:
+      - /dev/null:/app/screenshots
     # ports:
     #   - "127.0.0.1:8002:8191"
     network_mode: "service:transmission-openvpn"
     depends_on:
-      - transmission-openvpn
+      transmission-openvpn:
+        condition: service_healthy
     healthcheck:
-      test: curl -f http://${RPC_USERNAME}:${RPC_PASSWORD}@localhost:8000 || exit 1
+      test: ["CMD-SHELL", "curl -f http://localhost:8191/health || exit 1"]
       interval: 5m00s
       timeout: 10s
-      retries: 2
+      retries: 3
 
   jellyfin:
     image: lscr.io/linuxserver/jellyfin:latest
