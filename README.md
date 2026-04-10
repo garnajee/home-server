@@ -3,255 +3,222 @@
 > [!CAUTION]
 > **Disclaimer:** *The author and contributors do not claim ownership of any services listed or used in this repository and are not legally responsible for any improper or illegal use. It is provided for educational purposes only. The repository does not endorse piracy or copyright infringement. Creating a media platform based on torrents may involve downloading copyrighted content, which, without proper authorization, may be illegal in many jurisdictions. All rights go to the owners of the software used.*
 
-This is my perfect docker-compose for my streaming server.
+This is my Docker setup for a complete media server.
 
-You'll find two 2 docker-compose, one to create the streaming services and the other one to access them through a reverse proxy.
+The primary method now uses **two Docker Compose files**:
+
+- `docker-compose-internal.yml` for internal automation and VPN-bound services
+- `docker-compose-public.yml` for user-facing services
+
+I switched from `transmission-openvpn` to `qbittorrent + gluetun` because:
+
+- VPN and torrent client are now independent and easier to maintain
+- Gluetun is actively maintained and more flexible
+- qBittorrent is better for large torrent libraries (tags, categories, priorities, queueing)
+- Internal updates can be done without disrupting Jellyfin/Jellyseerr users
 
 > [!NOTE]
-> I've also created a [`chill-extra`](chill-extra) folder that automatically sends notifications on WhatsApp as soon as media is added in Jellyfin, add the [removarr](https://github.com/garnajee/removarr) docker and other scripts.
-
+> I've also created a [`chill-extra`](chill-extra) folder that can send WhatsApp notifications when media is added in Jellyfin, add [removarr](https://github.com/garnajee/removarr), and provide helper scripts.
 
 > [!IMPORTANT]
-> The only thing to modify is the `.env` file to suits your setup.
-
-Here, we are going to install everything under `/opt/chill/` (full streaming automation) and `/opt/docker/` (reverse proxy).
-
-To install everything, just follow this Readme in this order.
+> The legacy method (single compose + `transmission-openvpn`) is still available in this guide.
 
 ## Table of Contents
 
 - [Home Server](#home-server)
-  * [Table of Content](#table-of-contents)
+  * [Table of Contents](#table-of-contents)
   * [Requirements](#requirements)
-  * [Medias Server](#medias-server)
+  * [Media Server (Recommended: split internal/public)](#media-server-recommended-split-internalpublic)
       + [What's inside](#whats-inside)
       + [Installation](#installation)
         - [Modify `.env`](#modify-env)
         - [Create a docker network](#create-a-docker-network)
-      + [Run!](#run)
+      + [Run](#run)
       + [Check VPN connection](#check-vpn-connection)
-      + [Update docker's images](#update-dockers-images)
-        - [Update one specific image](#update-one-specific-image)
-        - [Update all images](#update-all-images)
+      + [Update docker images](#update-docker-images)
       + [Access services](#access-services)
+  * [Legacy setup (single compose + Transmission)](#legacy-setup-single-compose--transmission)
   * [Reverse Proxy](#reverse-proxy)
       + [What's inside](#whats-inside-1)
       + [Installation](#installation-1)
-      + [Run](#run)
+      + [Run](#run-1)
       + [Get a domain name & SSL certificate](#get-a-domain-name--ssl-certificate)
-  * [Setup all the services](#setup-all-the-services)
-      + [Transmission-openvpn](#transmission-openvpn)
+  * [Setup all services](#setup-all-services)
+      + [qBittorrent](#qbittorrent)
       + [Radarr & Sonarr](#radarr--sonarr)
-        - [Radarr/Sonarr Settings](#radarrsonarr-settings)
       + [Prowlarr](#prowlarr)
       + [Jellyfin](#jellyfin)
       + [Jellyseerr](#jellyseerr)
   * [Bonus](#bonus)
       + [Webhooks](#webhooks)
-	    - (to send to discord, Microsoft Teams or any API)
       + [Fake Ratio](#fake-ratio)
 - [License](#license)
 
 ## Requirements
 
-* [docker](https://docs.docker.com/engine/install/)
-* [docker-compose](https://docs.docker.com/compose/install/)
-* a server maybe? I deployed these docker-compose on 2 servers: a Synology DS923+ and a custom server
-* create docker [user](https://docs.docker.com/engine/install/linux-postinstall/)
+- [docker](https://docs.docker.com/engine/install/)
+- [docker-compose](https://docs.docker.com/compose/install/)
+- a server (tested on Synology DS923+ and a custom Linux server)
+- create a dedicated docker [user](https://docs.docker.com/engine/install/linux-postinstall/)
 
-Synology Server: 
+Synology:
 
-- Download the Docker App available on Synology Package Center
+- Install Docker/Container Manager from Synology Package Center
 - Create a docker [user](https://trash-guides.info/Hardlinks/How-to-setup-for/Synology/#create-a-user)
-  - once it's done, connect on SSH and type `id <username>` and write down the `uid` and `gid` respectively `PUID` and `PGID` for the [`.env`](.env-example).
-- Connect on SSH and download `docker-compose` [latest command version](https://docs.docker.com/compose/install/other/):
-  - or use my custom script to [download the latest docker-compose release](chill-extra/update-docker-compose.sh)
+  - then run `id <username>` and note `uid`/`gid` as `PUID`/`PGID` for [`.env`](.env-example)
+- Install latest compose plugin if needed
+  - or use [`chill-extra/update-docker-compose.sh`](chill-extra/update-docker-compose.sh)
+- Check version: `docker compose version` (or `docker-compose version`)
 
-- check version: `$ docker-compose version`
+## Media Server (Recommended: split internal/public)
 
-## Medias Server
 ### What's inside
 
-This docker-compose contains:
+`docker-compose-internal.yml`:
 
-- [Transmission-openvpn](https://github.com/haugene/docker-transmission-openvpn)
+- [Gluetun](https://github.com/qdm12/gluetun)
+- [qBittorrent](https://www.qbittorrent.org/)
 - [Prowlarr](https://github.com/Prowlarr/Prowlarr)
-- [FlareSolverr](https://github.com/FlareSolverr/FlareSolverr)
-- [Jellyfin](https://github.com/jellyfin/jellyfin)
-- [Jellyseerr](https://github.com/Fallenbagel/jellyseerr)
 - [Radarr](https://github.com/Radarr/Radarr)
 - [Sonarr](https://github.com/Sonarr/Sonarr)
 
+`docker-compose-public.yml`:
+
+- [Jellyfin](https://github.com/jellyfin/jellyfin)
+- [Jellyseerr](https://github.com/Fallenbagel/jellyseerr)
+
 ### Installation
 
-* Delete previous installation **be careful**
+Create folders:
 
 ```bash
-$ rm -rf /opt/chill
+mkdir -p /opt/chill/{qbit,prowlarr,radarr,sonarr,jellyfin,jellyseerr}/config
+mkdir -p /opt/chill/storage/downloads/{watch,completed,incomplete,medias/{movies,series}}
 ```
 
-* Create the structure for every services
+Download files in `/opt/chill/`:
 
 ```bash
-$ mkdir -p /opt/chill/{{jellyfin,jellyseerr,prowlarr,radarr,sonarr,transovpn}/config,storage/downloads/{watch,completed,incomplete,medias/{movies,series}}}
-```
-
-Here is what it's going to create:
-
-```bash
-opt
-└── chill
-    ├── jellyfin
-    │   └── config
-    ├── jellyseerr
-    │   └── config
-    ├── prowlarr
-    │   └── config
-    ├── radarr
-    │   └── config
-    ├── sonarr
-    │   └── config
-    ├── storage
-    │   └── downloads
-    │       ├── completed
-    │       ├── incomplete
-    │       ├── medias
-    │       │   ├── movies
-    │       │   └── series
-    │       └── watch
-    └── transovpn
-        └── config
-```
-
-
-The `/opt/chill/storage/downloads/watch/` folder is used when you manually put `.torrent` files, so it's going to be downloaded automatically without any access to the Transmission interface.
-
-* To check everything was properly created
-
-```bash
-$ ls -lR /opt/chill
-```
-
-Download the [`docker-compose-medias.yml`](docker-compose-medias.yml) and [`.env-example`](.env-example) in `/opt/chill/`, and rename them:
-
-```bash
-$ cd /opt/chill
-$ wget https://raw.githubusercontent.com/garnajee/home-server/master/docker-compose-medias.yml -O docker-compose.yml
-$ wget https://raw.githubusercontent.com/garnajee/home-server/master/.env-example -O .env
+cd /opt/chill
+wget https://raw.githubusercontent.com/garnajee/home-server/master/docker-compose-internal.yml -O docker-compose-internal.yml
+wget https://raw.githubusercontent.com/garnajee/home-server/master/docker-compose-public.yml -O docker-compose-public.yml
+wget https://raw.githubusercontent.com/garnajee/home-server/master/.env-example -O .env
 ```
 
 #### Modify `.env`
 
-Normally, you don't need to modify the docker-compose.yml file. Only the `.env` file.
+You usually only need to edit `.env`:
 
-- list of [VPN PROVIDERS](https://haugene.github.io/docker-transmission-openvpn/supported-providers/)
-- local subnet mask for `NETWORKIP` (use this command to know yours) : `ip route | awk '!/ (docker0|br-)/ && /src/ {print $1}'`
-- PUID and PGID
-- TZ
+- `WG_PRV_KEY`
+- `WG_SERVER_COUNTRIES`
+- `QBIT_WEBUI_PORT`
+- `BASE`, `DOWNLOADS`
+- `PUID`, `PGID`
+- `TZ`
+- `NETWORKIP` (detect with `ip route | awk '!/ (docker0|br-)/ && /src/ {print $1}'`)
+
+Example:
+
+```env
+# VPN
+WG_PRV_KEY="YOUR_WIREGUARD_PRIVATE_KEY"
+WG_SERVER_COUNTRIES="Switzerland"
+QBIT_WEBUI_PORT=8088
+
+# the rest is unchanged
+BASE=/opt/chill
+DOWNLOADS=/opt/chill/storage/downloads
+PUID=1030
+PGID=100
+TZ=Europe/Paris
+NETWORKIP=192.168.1.0/24
+```
 
 #### Create a docker network
 
-This part is optional. It's going to be created automatically. But you can still do it manually if you want.
-
-I did it manually because of the reverse proxy causing errors if I attached it to the automatically created docker subnet.
-
-All these images are going to be in the same docker network. To avoid any further conflict, just create it before running the docker-compose.
-
-Here the subnet is `10.10.66.0/24`. If you want to change this by something else, you'll need to modify the `docker-compose.yml` too. But remember, it's just a subnet *inside* docker, it's not going to affect your local network.
+Optional (it can be auto-created), but manual creation is recommended:
 
 ```bash
-$ docker network rm net-chill
-$ docker network create net-chill -d bridge --subnet 10.10.66.0/24
+docker network rm net-chill
+docker network create net-chill -d bridge --subnet 10.10.66.0/24
 ```
 
-### Run!
+### Run
 
-For the first execution of the docker-compose, I recommend to use this command, to check if there is no errors:
-
-Move the `docker-compose.yml` and `.env` file in `/opt/chill/`.
+Run internal stack:
 
 ```bash
-$ cd /opt/chill/
-$ docker-compose up
+cd /opt/chill
+docker compose -f docker-compose-internal.yml up -d
 ```
 
-It's going to download all the images, and start all the services.
-
-**By the way, each request made by Prowlarr and FlareSolverr goes through the VPN.**
-
-Now, if you don't see any red lines among the hundreds of lines that have just scrolled through the terminal, it's usually a good sign.
-
-So you can now stop this by pressing `CTRL+c` (one or two times to force stop), and then run the docker-compose again, but in background this time:
+Run public stack:
 
 ```bash
-$ cd /opt/chill/
-$ docker-compose up -d
+docker compose -f docker-compose-public.yml up -d
 ```
 
-Check the status of each docker:
+Check containers:
 
 ```bash
-$ docker-compose ps -a
+docker compose -f docker-compose-internal.yml ps -a
+docker compose -f docker-compose-public.yml ps -a
 ```
-
-`Status` should be `Up`.
 
 ### Check VPN connection
 
-Now everything is up, just to be sure, you can check if Transmission goes through VPN:
-
 ```bash
-$ docker exec -it transovpn curl ifconfig.co
-XXX.XXX.XXX.XXX
-```
-And then check the location of this ip address [here](https://ifconfig.co) for example.
-
-You can do the same command (just to be sure) for Prowlarr and Flaresolverr, they have the same ip address.
-
-### Update docker's images
-#### Update one specific image
-
-To update one specific docker image:
-
-```bash
-$ cd /opt/chill
-$ docker-compose stop <container_name>
-$ docker-compose rm <container_name>
-$ docker-compose pull <container_name>
-$ docker-compose up -d
+docker exec -it gluetun wget -qO- https://ifconfig.co
 ```
 
-#### Update all images
+Then check the location of that IP (for example on [ifconfig.co](https://ifconfig.co)).
 
-To update all images:
+### Update docker images
+
+Update internal stack only:
 
 ```bash
-$ docker-compose down
-$ docker-compose pull
-$ docker-compose up -d
+docker compose -f docker-compose-internal.yml pull
+docker compose -f docker-compose-internal.yml up -d
+```
+
+Update public stack only:
+
+```bash
+docker compose -f docker-compose-public.yml pull
+docker compose -f docker-compose-public.yml up -d
 ```
 
 ### Access services
 
-To access services: (`IP` is the ip of your server)
+| **Service**       | **Address**               |
+|-------------------|---------------------------|
+| qBittorrent WebUI | `<IP>:${QBIT_WEBUI_PORT}` |
+| Prowlarr          | `<IP>:8001`               |
+| Jellyfin          | `<IP>:8003`               |
+| Jellyseerr        | `<IP>:8004`               |
+| Radarr            | `<IP>:8010`               |
+| Sonarr            | `<IP>:8011`               |
 
-| **Service**          | **Address**  |
-|----------------------|--------------|
-| Transmission-openvpn | `<IP>:8000`  |
-| Prowlarr             | `<IP>:8001`  |
-| FlareSolverr         | `<IP>:8002`  |
-| Jellyfin             | `<IP>:8003`  |
-| Jellyseerr           | `<IP>:8004`  |
-| Radarr               | `<IP>:8010`  |
-| Sonarr               | `<IP>:8011`  |
+## Legacy setup (single compose + Transmission)
+
+This method is still supported.
+
+```bash
+cd /opt/chill
+wget https://raw.githubusercontent.com/garnajee/home-server/master/docker-compose-medias.yml -O docker-compose-medias.yml
+wget https://raw.githubusercontent.com/garnajee/home-server/master/.env-example -O .env
+docker compose -f docker-compose-medias.yml up -d
+```
+
+This is no longer the recommended default.
 
 ## Reverse Proxy
 
-To access Jellyfin and Jellyseerr from outside your local network, you'll need to set up a reverse proxy.
+To access Jellyfin and Jellyseerr outside your local network, use a reverse proxy.
+In this guide, we use [Nginx Proxy Manager](https://nginxproxymanager.com/setup/).
 
-For that purpose, I'm going to use [Nginx Proxy Manager](https://nginxproxymanager.com/setup/).
-
-You also need to open 2 ports on your router:
+You need to open 2 ports on your router:
 
 | Application/Service | Internal Port | External Port | Protocol | Equipment   |
 |:-------------------:|:-------------:|:-------------:|:--------:|:-----------:|
@@ -260,341 +227,137 @@ You also need to open 2 ports on your router:
 
 ### What's inside
 
-This docker-compose contains:
-
 - [Nginx Proxy Manager](https://github.com/NginxProxyManager/nginx-proxy-manager)
 - [Maria DB Aria](https://github.com/jc21/docker-mariadb-aria)
 
 ### Installation
 
-* Create the directory structure
+Create folders:
 
 ```bash
-$ mkdir -p /opt/docker/{nginx-proxy-manager,npm-db}
+mkdir -p /opt/docker/{nginx-proxy-manager,npm-db}
 ```
 
-Download the [`docker-compose-rp.yml`](docker-compose-rp.yml) in `/opt/docker/`, and rename it:
+Download compose file:
 
 ```bash
-$ cd /opt/docker
-$ wget https://raw.githubusercontent.com/garnajee/home-server/master/docker-compose-rp.yml -O docker-compose.yml
+cd /opt/docker
+wget https://raw.githubusercontent.com/garnajee/home-server/master/docker-compose-rp.yml -O docker-compose.yml
 ```
-
-I didn't create a `.env` file for this docker-compose mainly as this service is not going to be exposed on the web.
-
-Feel free to modify `user`, `password`, `name`, and so on directly in the `docker-compose.yml`.
 
 ### Run
 
-Simply execute this:
-
 ```bash
-$ cd /opt/docker/
-$ docker-compose up
+cd /opt/docker
+docker compose up -d
 ```
 
-Again, it's going to download the docker images. Check if there is no error, and if it's good, hit `CTRL+c` to stop everything and run this command:
+Service URL: `<IP>:81`
 
-```bash
-$ docker-compose up -d
-```
+Default admin:
 
-The service will be accessible at: `<IP>:81`.
-
-The default Admin User is:
-
-```
+```txt
 email: admin@example.com
 password: changeme
 ```
 
-You'll be ask to change these informations after the first logging.
-
 ### Get a domain name & SSL certificate
 
-I bought a domain name from OVH. If you do the same, follow this:
+I use OVH:
 
-* create an account on [OVH](https://ovh.com)
-* buy a domain name
-* once your domain name has been activated, create the necessary token for SSL
-* use this [link](https://www.ovh.com/auth/api/createToken?GET=/domain/zone/*&POST=/domain/zone/*&PUT=/domain/zone/*&DELETE=/domain/zone/*)
-+ **Make sure to write everything**
+- create an account on [OVH](https://ovh.com)
+- buy a domain name
+- create the token for SSL automation:
+  - https://www.ovh.com/auth/api/createToken?GET=/domain/zone/*&POST=/domain/zone/*&PUT=/domain/zone/*&DELETE=/domain/zone/*
 
-You'll need something like this:
+You'll get values like:
 
-```
+```txt
 dns_ovh_endpoint = ovh-eu
-dns_ovh_application_key = 109XXX7595XXXXXa
-dns_ovh_application_secret = a1z2g3y435TGcazbXXXXXXXXa45e
-dns_ovh_consumer_key = agf6hU1g13uj86XXXXXXXXXfv1l2n3g4j
+dns_ovh_application_key = xxxxxxxxxxxxx
+dns_ovh_application_secret = xxxxxxxxxxxxx
+dns_ovh_consumer_key = xxxxxxxxxxxxx
 ```
 
-* To create your certificate, go back on NPM (`<IP>:81`), "SSL Certificates" tab, "Add ..."
-* fill the information for: `*.yourdomain.com` and `yourdomain.com`
+In NPM:
 
-## Setup all the services
-### Transmission-openvpn
+- go to `SSL Certificates`
+- add wildcard + root domain: `*.yourdomain.com` and `yourdomain.com`
 
-Nothing to setup or maybe the "Speed Limits" depending on your internet connection.
+## Setup all services
+
+### qBittorrent
+
+Configure categories, tags, queueing, and priorities to match your workflow.
 
 ### Radarr & Sonarr
 
-Follow these [guides](https://trash-guides.info/).
+Follow [TRaSH guides](https://trash-guides.info/).
 
-I create a config to prefer download WEB-DL - MULTi (Original language + Truefrench) - 1080p - h264 - and NO HDR/10 bit.
-
-If you want to have the same config, see the [`recyclarr-setup`](recyclarr-setup) folder.
-
-#### Radarr/Sonarr Settings
-
-1. Media Management:
-    - check `Replace Illegal Characters`
-    - Colon Replacement: `Delete`
-    - Path `/downloads/medias/movies` (for sonarr: `/downloads/medias/series`)
-2. Profiles : click on your profile and `Edit groups`, then ungroup your selected qualities
-3. Quality: Not changed
-4. Custom Formats: automatically imported with recyclarr
-5. Indexer: it'll be added automatically with Prowlarr
-6. Download Client:
-    - add transmission
-    - host: 10.10.66.100
-    - port: 9091
-    - set username and password
-    - recent priority: `last`
-    - older priority: `last`
-    - check `Remove Completed`
-    - `Remote Path Mappings`: Host: `10.10.66.100 (Transmission)` ; Remote Path: `/data/completed/` ; Local Path: `/downloads/completed/`
-
-> [!IMPORTANT]
-> Go under `settings/general` and copy the API key, you'll need it for Prowlarr
+If you want similar quality profiles/custom formats, see [`recyclarr-setup`](recyclarr-setup).
 
 ### Prowlarr
 
-Add your indexer. In `Tags` field, add "flaresolverr".
+Add indexers, then connect apps in `Settings > Apps`:
 
-In order to add `Flaresolverr` proxy:
-
-- go to `Settings > Indexers`
-- add "Flaresolverr" 
-- make sure the tag is "flaresolverr"
-- add this ip address: "http://10.10.66.100:8191"
-- save
-
-Connect to Radarr/Sonarr:
-
-- go to `Settings > Apps`
-- add radarr:
-  - full sync
-  - prowlarr server: http://10.10.66.100:9696
-  - radarr server: http://10.10.66.110:7878
+- Prowlarr: `http://10.10.66.100:9696`
+- Radarr: `http://10.10.66.110:7878`
+- Sonarr: `http://10.10.66.111:8989`
 
 ### Jellyfin
 
-Follow the steps, it's easy.
+Follow initial setup wizard and create users.
 
-Create all the users who are going to access to Jellyfin **and** Jellyseerr.
+For custom menu links:
 
-To have better images for your libraries, you can use [these images](https://imgur.com/a/Guqk15B).
-
-**Prevent users from changing their password:**
-
-Go into *Dashboard* > *General* > scroll down to the *CSS* section and add this CSS code:
-
-```css
-.updatePasswordForm {
-  display: none !important;
-}
-```
-
-**Add a custom button in the menu**
-
-You can add a custom button to the Jellyfin menu. For example, you can add a link to Jellyseerr.
-
-To do that, you need to add this line in the Jellyfin's `volume` field in the docker-compose file:
-
-```
+```txt
 - ${BASE}/jellyfin/web-config.json:/usr/share/jellyfin/web/config.json
 ```
 
-And add the `web-config.json` file in your `/opt/chill/jellyfin/` folder.
-
-*You'll see that the docker path is not the same as in the documentation. I don't know why, but that's the only way I can get it to work.*
-
-Read more [here](https://jellyfin.org/docs/general/clients/web-config/#custom-menu-links).
+Read more: [Jellyfin web config](https://jellyfin.org/docs/general/clients/web-config/#custom-menu-links).
 
 ### Jellyseerr
 
-Follow the steps, it's easy.
-
-Sign in with your Jellyfin account and make sure to use the jellyfin *internal docker ip address* for the "Jellyfin URL".
-
-When Syncing Librairies, uncheck "Collections".
-
-Then, add your radarr and sonarr server (still with the internal docker ip address).
-
-Once this is done, you can sync Jellyfin users with Jellyseerr, so that they have the same account for Jellyfin and Jellyseerr.
-
-For sonarr server settings, make sure to check *Season folder*.
+Sign in with Jellyfin account and use internal Docker IPs for Jellyfin/Radarr/Sonarr connections.
 
 ## Bonus
 
-Don't want to use a reverse proxy?
+Do not want to expose ports?
 
-You can use a VPN:
-
-- Official Synology VPN package -> *need to open port on your router*
-
-And if you don't want to open port on your router (or if you can't):
-
+- Official Synology VPN package (requires router port-forwarding)
 - [Tailscale](https://tailscale.com/kb/1131/synology/) on Synology
 - [CloudFlare Tunnel](https://github.com/cloudflare/cloudflared)
 
 > [!WARNING]
-> Pay attention to not use CloudFlare tunnel for Jellyfin streaming, you may be banned for breaking [TOS](https://www.cloudflare.com/en-gb/terms/).
+> Be careful with CloudFlare Tunnel for Jellyfin streaming, it can violate [Cloudflare ToS](https://www.cloudflare.com/en-gb/terms/).
 
 ### Webhooks
 
-I provide some webhooks for Jellyfin. These webhooks are used for:
+Jellyfin webhook templates are available for:
 
-- [Any API (WhatsApp in my case)](#any-api-link)
-- [Discord](#discord-webhook)
-- [Microsoft Teams](#ms-teams-webhook)
+- Generic API: [`webhooks/jellyfin/global-item.handlebars`](webhooks/jellyfin/global-item.handlebars)
+- Discord: [`webhooks/jellyfin/discord`](webhooks/jellyfin/discord)
+- Microsoft Teams: [`webhooks/jellyfin/ms-teams`](webhooks/jellyfin/ms-teams)
 
-First of all, you need to install the Jellyfin plugin called "Webhooks": Jellyfin > Dashboard > Plugins > Catalog > Webhook
+Install plugin first: Jellyfin `Dashboard > Plugins > Catalog > Webhook`.
 
-Then, you need to restart Jellyfin:
+Restart Jellyfin:
 
 ```bash
-$ cd /opt/chill/
-$ docker-compose restart jellyfin
+cd /opt/chill
+docker compose -f docker-compose-public.yml restart jellyfin
 ```
 
-Now, go back to Jellyfin in the Plugins tab and click on Webhook.
-
-The "*Server Url*" is your Jellyfin URL. If you expose it on internet, it's something like this: https://jellyfin.yourdomainname.com/
-
-*If you don't have a domain name, Jellyfin will not be able to display images (posters) in the Discord/Teams webhooks.*
-
-<details close>
-  <summary id="any-api-link">Any API</summary>
-    <p>This method will allow you to send a webhook to any service/api you want in a very easy way.</p>
-    <p>This consists of using your own API and create your request in Python (which is more flexible than the Jellyfin Webhook plugin) and send it to the API you want.</p>
-    <h5>Steps:</h5>
-    <ol>
-      <li>
-        <b>Modify the <em>jellyhookapi.py</em> file:</b><br>
-        You'll need to customize the <a href="https://github.com/garnajee/JellyfinAPI/blob/master/jellyhookapi.py">JellyHookAPI/jellyhookapi.py</a> file according to your specific needs.
-      </li>
-      <li>
-        <b>Add the Handlebars template:</b><br>
-        Navigate to Jellyfin > Plugin > Webhook > "Generic Destination" and add the <a href="webhooks/jellyfin/global-item.handlebars">Handlebars template</a>.
-      </li>
-      <li>
-        <b>Build and run the Docker image:</b><br>
-        For detailed instructions on building and running the Docker image, refer to the <a href="https://github.com/garnajee/JellyHookAPI/tree/master#jellyhookapi">JellyHookAPI/README</a> in the JellyHookAPI folder.
-      </li>
-    </ol>
-    <p>Finally, in my case, I wanted to send notification to a WhatsApp group. If you wan to do this, follow <a href="whatsapp-api#whatsapp-api">these instructions</a></p>
-</details>
-
-<details close>
-  <summary id="discord-webhook">Discord Webhook</summary>
-    <p>To add a <strong>Discord</strong> webhook:</p>
-    <ul>
-      <li>click on "Add Discord Destination"</li>
-      <li>"<em>Webhook Name</em>": what you want</li>
-      <li>"<em>Webhook Url</em>": the discord webhook url</li>
-      <li>"<em>Notification type</em>":</li>
-    <ol>
-      <li>if you want to receive notification when a new item (movie/tv show/...) is added, check "<em>Item Added</em>"</li>
-      <li>or when a user is locked out (because of too much wrong password during connection), check "<em>User Locked Out</em>"</li>
-      <li>or when a user is created/deleted, when a password is changed, ... (for every use case check <a href="webhooks/jellyfin/discord/discord-users.handlebars">this file</a>), check "<em>Authentication</em>" and "<em>User</em>"</li>
-    </ol>
-    <li>"<em>User Filter</em>": personally, I don't check anything here</li>
-    <li>"<em>Item Type</em>": check everything (depending on your webhook template) <strong>except</strong> "<em>Send All Properties</em>"</li>
-    <li>"<em>Template</em>": (copy and paste the content)</li>
-    <ol>
-      <li><a href="webhooks/jellyfin/discord/discord-item.handlebars">webhooks/jellyfin/discord/discord-item.handlebars</a></li>
-      <li><a href="webhooks/jellyfin/discord/discord-users-locked-out.handlebars">webhooks/jellyfin/discord/discord-users-locked-out.handlebars</a></li>
-      <li><a href="webhooks/jellyfin/discord/discord-users.handlebars">webhooks/jellyfin/discord/discord-users.handlebars</a></li>
-    </ol>
-    <li>"<em>Avatar Url</em>": just change the avatar profile picture directly on Discord</li>
-    <li>"<em>Webhook Username</em>": should not be empty, but you can write what you want, the real username is defined directly in Discord</li>
-    <li>"<em>Mention Type</em>": I never used this</li>
-    <li>"<em>Embed Color</em>": color of the embedded message</li>
-  </ul>
-  <p>Then click save.</p>
-</details>
-
-<details close>
-  <summary id="ms-teams-webhook">Microsoft Teams Webhook</summary>
-  <p>To add a <strong>Microsoft Teams</strong> webhook:</p>
-  <ul>
-    <li>click on "Add a Generic Destination"</li>
-    <li>check the steps for Discord, it's the same</li>
-    <li>"<em>Template</em>":</li>
-    <ol>
-      <li>"<em>Item Added</em>": <a href="webhooks/jellyfin/ms-teams/teams-items.handlebars">webhooks/jellyfin/ms-teams/teams-items.handlebars</a></li>
-      <li>"<em>User Locked Out</em>": <a href="webhooks/jellyfin/ms-teams/teams-users-locked-out.handlebars">webhooks/jellyfin/ms-teams/teams-users-locked-out.handlebars</a></li>
-      <li>"<em>User</em>": <a href="webhooks/jellyfin/ms-teams/teams-users.handlebars">webhooks/jellyfin/ms-teams/teams-users.handlebars</a></li>
-    </ol>
-  </ul>
-</details>
+For WhatsApp workflow examples, see [`whatsapp-api`](whatsapp-api).
 
 ### Fake Ratio
 
-If you need to fake your upload stats on (semi-)private indexers, in order to have a ratio >= 1.
+If you need to fake upload ratio on private trackers, you can use [Ratio.py](https://github.com/garnajee/Ratio.py).
 
 > [!CAUTION]
-> I don't recommend using this indefinitely, please consider sharing to the community.
+> Not recommended for long-term usage. Consider seeding fairly.
 
-You can use [Ratio.py](https://github.com/garnajee/Ratio.py).
-
-To use this python script in a secure way, you can add it in the `transmission-openvpn` docker (already running).
-That way, everything will go through the vpn.
-
-<details close>
-  <summary>To do this, follow these steps:</summary>
-  <ul>
-    <li>create the folder:</li>
-  </ul>
-
-  ```bash
-  $ cd /opt/chill
-  $ mkdir -p transovpn/ratio
-  ```
-
-  <ul>
-    <li>add this in the <code>docker-compose.yml</code>:</li>
-  </ul>
-
-  ```diff
-      volumes:
-        - ${BASE}/transovpn/config:/config
-        - ${DOWNLOADS}:/data
-  +     - ${BASE}/transovpn/ratio/:/home/
-  ```
-
-  <ul>
-    <li>then download the content of <code>Ratio.py</code> repository inside the <code>ratio</code> folder.</li>
-    <li>download a very popular and highly leeched torrent file and put it inside the <code>ratio</code> folder.</li>
-    <li>modify the <code>config.json</code> file to match the torrent file name and path. Add your desired upload speed.</li>
-    <li>install python and run the script:</li>
-  </ul>
-
-  ```
-  $ cd /opt/chill/
-  $ docker exec -it transovpn bash
-  # apt update && apt install python3 python3-pip
-  # cd /home
-  # pip install -r requirements.txt
-  # nohup python3 ratio.py -c config.json &amp;
-  ```
-
-  <ul>
-    <li>to view logs : <code># tail -f nohup.out</code></li>
-  </ul>
-</details>
+When using the legacy Transmission container, you can run the script there so traffic stays behind VPN.
 
 # License
 
