@@ -45,6 +45,7 @@ I switched from `transmission-openvpn` to `qbittorrent + gluetun` because:
       + [Get a domain name & SSL certificate](#get-a-domain-name--ssl-certificate)
   * [Setup all services](#setup-all-services)
       + [qBittorrent](#qbittorrent)
+        - [qBittorrent reference config (troubleshooting)](#qbittorrent-reference-config-troubleshooting)
       + [Radarr & Sonarr](#radarr--sonarr)
       + [Prowlarr](#prowlarr)
       + [Jellyfin](#jellyfin)
@@ -65,7 +66,7 @@ Synology:
 
 - Install Docker/Container Manager from Synology Package Center
 - Create a docker [user](https://trash-guides.info/Hardlinks/How-to-setup-for/Synology/#create-a-user)
-  - then run `id <username>` and note `uid`/`gid` as `PUID`/`PGID` for [`.env`](.env-example)
+  - then run `id <username>` and note `uid`/`gid` as `PUID`/`PGID` for your `.env`
 - Install latest compose plugin if needed
   - or use [`chill-extra/update-docker-compose.sh`](chill-extra/update-docker-compose.sh)
 - Check version: `docker compose version` (or `docker-compose version`)
@@ -207,7 +208,7 @@ This method is still supported.
 ```bash
 cd /opt/chill
 wget https://raw.githubusercontent.com/garnajee/home-server/master/docker-compose-medias.yml -O docker-compose-medias.yml
-wget https://raw.githubusercontent.com/garnajee/home-server/master/.env-example -O .env
+wget https://raw.githubusercontent.com/garnajee/home-server/master/.env-example-legacy -O .env
 docker compose -f docker-compose-medias.yml up -d
 ```
 
@@ -289,6 +290,12 @@ In NPM:
 ### qBittorrent
 
 Configure categories, tags, queueing, and priorities to match your workflow.
+
+#### qBittorrent reference config (troubleshooting)
+
+If users run into issues, they can compare with this known working reference:
+
+- [`qBittorrent.conf`](qBittorrent.conf)
 
 ### Radarr & Sonarr
 
