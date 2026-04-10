@@ -1,0 +1,114 @@
+name: chill-internal
+services:
+  gluetun:
+    image: qmcgaw/gluetun:v3.41.1
+    container_name: gluetun
+    restart: unless-stopped
+    # https://github.com/qdm12/gluetun-wiki/blob/main/setup/prerequisites/synology.md
+    # https://github.com/qdm12/gluetun-wiki/blob/main/setup/providers/protonvpn.md
+    cap_add:
+      - NET_ADMIN
+    devices:
+      - /dev/net/tun:/dev/net/tun
+    sysctls:
+      - net.ipv6.conf.all.disable_ipv6=1
+      - net.ipv6.conf.default.disable_ipv6=1
+    environment:
+      # See https://github.com/qdm12/gluetun/wiki
+      - VPN_SERVICE_PROVIDER=protonvpn
+      - VPN_TYPE=wireguard
+      - WIREGUARD_PRIVATE_KEY=${WG_PRV_KEY}
+      - SERVER_COUNTRIES=${WG_SERVER_COUNTRIES}  # https://raw.githubusercontent.com/qdm12/gluetun/master/internal/storage/servers.json
+      - FREE_ONLY=off
+      - PORT_FORWARD_ONLY=on
+      - VPN_PORT_FORWARDING=on
+      - VPN_PORT_FORWARDING_PROVIDER=protonvpn
+      - VPN_PORT_FORWARDING_UP_COMMAND=/bin/sh -c 'wget -O- --retry-connrefused --post-data "json={\"listen_port\":{{PORTS}}}" http://127.0.0.1:8080/api/v2/app/setPreferences 2>&1'
+      - FIREWALL_OUTBOUND_SUBNETS=${NETWORKIP},10.10.66.0/24
+      - DNS_UPSTREAM_RESOLVERS=cloudflare,google,quad9
+      - TZ=${TZ}
+    ports:
+      - ${QBIT_WEBUI_PORT}:8080
+      - 8001:9696
+    networks:
+      net-chill:
+        ipv4_address: 10.10.66.100 
+
+  qbittorrent:
+    image: lscr.io/linuxserver/qbittorrent:latest
+    container_name: qbittorrent
+    mem_limit: 8G
+    memswap_limit: 12G
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+      - WEBUI_PORT=8080
+    volumes:
+      - ${BASE}/qbit/config:/config
+      - ${DOWNLOADS}:/data
+    network_mode: service:gluetun
+    depends_on:
+      gluetun:
+        condition: service_healthy
+    restart: unless-stopped
+
+
+  prowlarr:
+    image: lscr.io/linuxserver/prowlarr:latest
+    container_name: prowlarr
+    restart: unless-stopped
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+    volumes:
+      - ${BASE}/prowlarr/config:/config
+    network_mode: service:gluetun
+    depends_on:
+      gluetun:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://127.0.0.1:9696 || exit 1"]
+      interval: 5m00s
+      timeout: 30s
+      retries: 5
+      start_period: 90s
+
+  radarr:
+    image: lscr.io/linuxserver/radarr:latest
+    container_name: radarr
+    restart: always
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+    volumes:
+      - ${BASE}/radarr/config:/config
+      - ${DOWNLOADS}:/downloads
+    ports:
+      - "0.0.0.0:8010:7878"
+    networks:
+      net-chill:
+        ipv4_address: 10.10.66.110
+
+  sonarr:
+    image: lscr.io/linuxserver/sonarr:latest
+    container_name: sonarr
+    restart: always
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+    volumes:
+      - ${BASE}/sonarr/config:/config
+      - ${DOWNLOADS}:/downloads
+    ports:
+      - "0.0.0.0:8011:8989"
+    networks:
+      net-chill:
+        ipv4_address: 10.10.66.111
+
+networks:
+  net-chill:
+    external: true
