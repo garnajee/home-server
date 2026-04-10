@@ -123,7 +123,7 @@ Example:
 ```env
 # VPN
 WG_PRV_KEY="YOUR_WIREGUARD_PRIVATE_KEY"
-WG_SERVER_COUNTRIES="Switzerland"
+WG_SERVER_COUNTRIES="Country"
 QBIT_WEBUI_PORT=8088
 
 # the rest is unchanged
