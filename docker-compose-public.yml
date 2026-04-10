@@ -1,0 +1,44 @@
+name: chill-public
+services:
+  jellyfin:
+    image: lscr.io/linuxserver/jellyfin:latest
+    container_name: jellyfin
+    restart: always
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+      - DOCKER_MODS=ghcr.io/intro-skipper/intro-skipper-docker-mod
+    volumes:
+      - ${BASE}/jellyfin/config:/config
+      - ${DOWNLOADS}:/data
+      - ${BASE}/jellyfin/web-config.json:/usr/share/jellyfin/web/config.json
+    ports:
+      - "0.0.0.0:8003:8096"
+    networks:
+      net-chill:
+        ipv4_address: 10.10.66.103
+
+  jellyseerr:
+    image: fallenbagel/jellyseerr:2.6.0
+    container_name: jellyseerr
+    restart: always
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+    volumes:
+      - ${BASE}/jellyseerr/config:/app/config
+    ports:
+      - "0.0.0.0:8004:5055"
+    dns:
+      - "1.1.1.1"
+      - "8.8.8.8"
+    networks:
+      net-chill:
+        ipv4_address: 10.10.66.104
+
+# docker network create --driver bridge --subnet 10.10.66.0/24 net-chill
+networks:
+  net-chill:
+    external: true
