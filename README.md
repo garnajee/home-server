@@ -15,7 +15,7 @@ I switched from `transmission-openvpn` to `qbittorrent + gluetun` because:
 - VPN and torrent client are now independent and easier to maintain
 - Gluetun is actively maintained and more flexible
 - qBittorrent is better for large torrent libraries (tags, categories, priorities, queueing)
-- Internal updates can be done without disrupting Jellyfin/Jellyseerr users
+- Internal updates can be done without disrupting Jellyfin/Seerr users
 
 > [!NOTE]
 > I've also created a [`chill-extra`](chill-extra) folder that can send WhatsApp notifications when media is added in Jellyfin, add [removarr](https://github.com/garnajee/removarr), and provide helper scripts.
@@ -49,7 +49,7 @@ I switched from `transmission-openvpn` to `qbittorrent + gluetun` because:
       + [Radarr & Sonarr](#radarr--sonarr)
       + [Prowlarr](#prowlarr)
       + [Jellyfin](#jellyfin)
-      + [Jellyseerr](#jellyseerr)
+      + [Seerr](#seerr)
   * [Bonus](#bonus)
       + [Webhooks](#webhooks)
       + [Fake Ratio](#fake-ratio)
@@ -86,14 +86,14 @@ Synology:
 `docker-compose-public.yml`:
 
 - [Jellyfin](https://github.com/jellyfin/jellyfin)
-- [Jellyseerr](https://github.com/Fallenbagel/jellyseerr)
+- [Seerr](https://github.com/seerr-team/seerr)
 
 ### Installation
 
 Create folders:
 
 ```bash
-mkdir -p /opt/chill/{qbit,prowlarr,radarr,sonarr,jellyfin,jellyseerr}/config
+mkdir -p /opt/chill/{qbit,prowlarr,radarr,sonarr,jellyfin,seerr}/config
 mkdir -p /opt/chill/storage/downloads/{watch,completed,incomplete,medias/{movies,series}}
 ```
 
@@ -197,7 +197,7 @@ docker compose -f docker-compose-public.yml up -d
 | qBittorrent WebUI | `<IP>:${QBIT_WEBUI_PORT}` |
 | Prowlarr          | `<IP>:8001`               |
 | Jellyfin          | `<IP>:8003`               |
-| Jellyseerr        | `<IP>:8004`               |
+| Seerr             | `<IP>:8004`               |
 | Radarr            | `<IP>:8010`               |
 | Sonarr            | `<IP>:8011`               |
 
@@ -216,7 +216,7 @@ This is no longer the recommended default.
 
 ## Reverse Proxy
 
-To access Jellyfin and Jellyseerr outside your local network, use a reverse proxy.
+To access Jellyfin and Seerr outside your local network, use a reverse proxy.
 In this guide, we use [Nginx Proxy Manager](https://nginxproxymanager.com/setup/).
 
 You need to open 2 ports on your router:
@@ -323,7 +323,7 @@ For custom menu links:
 
 Read more: [Jellyfin web config](https://jellyfin.org/docs/general/clients/web-config/#custom-menu-links).
 
-### Jellyseerr
+### Seerr
 
 Sign in with Jellyfin account and use internal Docker IPs for Jellyfin/Radarr/Sonarr connections.
 
